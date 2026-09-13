@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WorldBox Mini - Vui vẻ</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: #111;
+    font-family: system-ui, sans-serif;
+    color: white;
+  }
+  canvas { display: block; }
+  #ui {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(6px);
+    padding: 14px 16px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.15);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    max-width: 260px;
+  }
+  h1 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    letter-spacing: 0.5px;
+  }
+  p {
+    margin: 4px 0 12px;
+    font-size: 14px;
+    opacity: 0.9;
+  }
+  button {
+    display: block;
+    width: 100%;
+    margin: 6px 0;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 10px;
+    background: #2ecc71;
+    color: #062b12;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: transform 0.1s, filter 0.1s;
+  }
+  button:hover { filter: brightness(1.1); transform: scale(1.02); }
+  button:active { transform: scale(0.98); }
+  #meteor { background: #ff6b6b; color: #2b0606; }
+  #reset { background: #f1c40f; color: #2b2200; }
+  .hint {
+    font-size: 12px;
+    opacity: 0.7;
+    margin-top: 10px;
+    line-height: 1.4;
+  }
+</style>
+</head>
+<body>
+<canvas id="world"></canvas>
+
+<div id="ui">
+  <h1>🌍 WorldBox Mini</h1>
+  <p>Sinh vật: <span id="count">0</span></p>
+  <button id="spawn">➕ Tạo sinh vật</button>
+  <button id="meteor">☄️ Thả thiên thạch</button>
+  <button id="reset">🔄 Reset thế giới</button>
+  <div class="hint">Click vào bản đồ để tạo sinh vật. Chúc bạn vui vẻ!</div>
+</div>
+
+<script>
+const canvas = document.getElementById('world');
+const ctx = canvas.getContext('2d');
+let W, H;
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+const creatures = [];
+const particles = [];
+const COLORS = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#a06cd5', '#ff9f1c', '#2ec4b6'];
+
+class Creature {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.vx = (Math.random() - 0.5) * 2;
+    this.vy = (Math.random() - 0.5) * 2;
+    this.size = 8 + Math.random() * 6;
+    this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+    this.wander = Math.random() * Math.PI * 2;
+  }
+
+  update() {
+    this.wander += (Math.random() - 0.5) * 0.3;
+    this.vx += Math.cos(this.wander) * 0.05;
+    this.vy += Math.sin(this.wander) * 0.05;
+
+    const speed = Math.hypot(this.vx, this.vy);
+    if (speed > 2) {
+      this.vx = (this.vx / speed) * 2;
+      this.vy = (this.vy / speed) * 2;
+    }
+
+    this.vx *= 0.99;
+    this.vy *= 0.99;
+    this.x += this.vx;
+    this.y += this.vy;
+
+    if (this.x < 0 || this.x > W) {
+      this.vx *= -1;
+      this.x = Math.max(0, Math.min(W, this.x));
+    }
+    if (this.y < 0 || this.y > H) {
+      this.vy *= -1;
+      this.y = Math.max(0, Math.min(H, this.y));
+    }
+  }
+
+  draw() {
+    // Thân
+    ctx.fillStyle = this.color;
+    ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+
+    // Mắt trắng
+    const eyeSize = Math.max(2, this.size / 5);
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(this.x - this.size / 4, this.y - this.size / 4, eyeSize, eyeSize);
+    ctx.fillRect(this.x + this.size / 8, this.y - this.size / 4, eyeSize, eyeSize);
+
+    // Con ngươi
+    ctx.fillStyle = '#000';
+    const pupil = eyeSize / 2;
+    ctx.fillRect(this.x - this.size / 4 + eyeSize / 3, this.y - this.size / 4 + eyeSize / 3, pupil, pupil);
+    ctx.fillRect(this.x + this.size / 8 + eyeSize / 3, this.y - this.size / 4 + eyeSize / 3, pupil, pupil);
+  }
+}
+
+function updateCount() {
+  document.getElementById('count').textContent = creatures.length;
+}
+
+function spawnCreature(x, y) {
+  if (creatures.length > 300) return;
+  creatures.push(new Creature(
+    x ?? Math.random() * W,
+    y ?? Math.random() * H
+  ));
+  updateCount();
+}
+
+function spawnMeteor() {
+  const x = Math.random() * W;
+  const y = Math.random() * H;
+  const radius = 120;
+
+  // Tia lửa nổ
+  for (let i = 0; i < 60; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = Math.random() * 6 + 2;
+    particles.push({
+      x, y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      life: 1,
+      color: Math.random() < 0.5 ? '#ff9f1c' : '#ff6b6b',
+      size: Math.random() * 6 + 2
+    });
+  }
+
+  // Sinh vật trong bán kính nổ tan thành hạt
+  for (let i = creatures.length - 1; i >= 0; i--) {
+    const c = creatures[i];
+    if (Math.hypot(c.x - x, c.y - y) < radius) {
+      for (let j = 0; j < 8; j++) {
+        particles.push({
+          x: c.x,
+          y: c.y,
+          vx: (Math.random() - 0.5) * 5,
+          vy: (Math.random() - 0.5) * 5,
+          life: 1,
+          color: c.color,
+          size: 3
+        });
+      }
+      creatures.splice(i, 1);
+    }
+  }
+  updateCount();
+}
+
+function updateParticles() {
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vx *= 0.96;
+    p.vy *= 0.96;
+    p.life -= 0.02;
+    if (p.life <= 0) particles.splice(i, 1);
+  }
+}
+
+function drawParticles() {
+  particles.forEach(p => {
+    ctx.globalAlpha = p.life;
+    ctx.fillStyle = p.color;
+    ctx.fillRect(p.x, p.y, p.size, p.size);
+  });
+  ctx.globalAlpha = 1;
+}
+
+function animate() {
+  // Nền đất
+  ctx.fillStyle = '#1a2a1a';
+  ctx.fillRect(0, 0, W, H);
+
+  // Lưới nhẹ cho vui mắt
+  ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < W; x += 40) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, H);
+    ctx.stroke();
+  }
+  for (let y = 0; y < H; y += 40) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(W, y);
+    ctx.stroke();
+  }
+
+  creatures.forEach(c => {
+    c.update();
+    c.draw();
+  });
+
+  updateParticles();
+  drawParticles();
+
+  requestAnimationFrame(animate);
+}
+animate();
+
+// Click / chạm để tạo sinh vật
+canvas.addEventListener('click', e => {
+  spawnCreature(e.clientX, e.clientY);
+});
+
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const touch = e.touches[0];
+  spawnCreature(touch.clientX, touch.clientY);
+}, { passive: false });
+
+// Nút bấm
+document.getElementById('spawn').addEventListener('click', () => spawnCreature());
+document.getElementById('meteor').addEventListener('click', spawnMeteor);
+document.getElementById('reset').addEventListener('click', () => {
+  creatures.length = 0;
+  particles.length = 0;
+  updateCount();
+});
+
+// Tạo sẵn vài sinh vật cho vui
+for (let i = 0; i < 25; i++) spawnCreature();
+</script>
+</body>
+</html>
