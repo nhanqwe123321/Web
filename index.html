@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cửa Hàng</title>
-    <style>
+    <style type="text/css">
+        <!--
         * {
             margin: 0;
             padding: 0;
@@ -17,7 +18,6 @@
             color: #c9d1d9;
             min-height: 100vh;
             padding: 20px 16px;
-            display: block;
         }
 
         /* ---------- SHOP ---------- */
@@ -73,6 +73,728 @@
 
         .header-right {
             display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .cart-btn {
+            background: #1f2937;
+            color: #ffffff;
+            border: 1px solid #30363d;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cart-btn:hover {
+            background: #374151;
+        }
+
+        .cart-count {
+            background: #2563eb;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        /* Sub Header */
+        .sub-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 0 4px;
+        }
+
+        .sub-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .category-select {
+            background: #131a26;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .collapse-btn {
+            background: #131a26;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Product Grid - Dùng Flexbox thay vì Grid để tương thích tốt hơn */
+        .product-grid {
+            display: flex;
+            flex-wrap: wrap;
+            margin: -6px;
+            justify-content: center;
+        }
+
+        /* Product Card */
+        .product-card {
+            background: #131a26;
+            border-radius: 16px;
+            border: 1px solid #21262d;
+            margin: 6px;
+            width: calc(50% - 12px);
+            min-width: 140px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .card-image {
+            background: #0d1117;
+            padding: 20px 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            min-height: 120px;
+        }
+
+        .badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #78350f;
+            color: #fbbf24;
+            font-size: 0.55rem;
+            font-weight: bold;
+            padding: 3px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .freefire-icon {
+            width: 60px;
+            height: 60px;
+            background: #ff6b00;
+            background: linear-gradient(135deg, #ff6b00, #ff0055);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .card-content {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .card-category {
+            color: #3b82f6;
+            font-size: 0.65rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .card-title {
+            color: #ffffff;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            line-height: 1.3;
+            overflow: hidden;
+            display: block;
+        }
+
+        .card-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 12px;
+        }
+
+        .card-meta span {
+            color: #8b949e;
+            font-size: 0.7rem;
+        }
+
+        .card-bottom {
+            margin-top: auto;
+        }
+
+        .card-price {
+            color: #00ff88;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .card-stock {
+            color: #8b949e;
+            font-size: 0.7rem;
+            margin-bottom: 10px;
+        }
+
+        .card-btn {
+            width: 100%;
+            padding: 8px;
+            background: #1f2937;
+            color: #e5e7eb;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.75rem;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+
+        .card-btn:hover {
+            background: #374151;
+            color: #ffffff;
+        }
+
+        .card-btn.download {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        .card-btn.download:hover {
+            background: #1d4ed8;
+        }
+
+        /* Cart Overlay */
+        .cart-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: flex-end;
+            z-index: 1000;
+        }
+
+        .cart-overlay.open {
+            display: flex;
+        }
+
+        .cart-panel {
+            background: #131a26;
+            width: 100%;
+            max-width: 400px;
+            height: 100%;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            border-left: 1px solid #21262d;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .cart-header h2 {
+            font-size: 1.2rem;
+            color: #ffffff;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #8b949e;
+            font-size: 1.8rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #ffffff;
+        }
+
+        .cart-items {
+            flex: 1;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #21262d;
+        }
+
+        .cart-item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .cart-item-name {
+            font-weight: bold;
+            color: #ffffff;
+            font-size: 0.9rem;
+        }
+
+        .cart-item-price {
+            color: #8b949e;
+            font-size: 0.8rem;
+        }
+
+        .cart-item-qty {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .qty-btn {
+            width: 28px;
+            height: 28px;
+            border: 1px solid #30363d;
+            background: #1f2937;
+            color: #c9d1d9;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qty-btn:hover {
+            background: #374151;
+        }
+
+        .remove-btn {
+            background: none;
+            border: none;
+            color: #f87171;
+            cursor: pointer;
+            font-size: 1.1rem;
+            margin-left: 4px;
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 16px 0;
+            border-top: 2px solid #21262d;
+            margin-top: 12px;
+            color: #ffffff;
+        }
+
+        .checkout-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .checkout-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .empty-cart {
+            text-align: center;
+            color: #8b949e;
+            padding: 40px 0;
+            font-size: 0.9rem;
+        }
+        -->
+    </style>
+</head>
+<body>
+
+    <!-- ========== SHOP SECTION ========== -->
+    <div id="shopSection" class="shop-container">
+        <!-- Top Header -->
+        <div class="top-header">
+            <div class="header-left">
+                <div class="logo-icon">⬡</div>
+                <div class="brand-info">
+                    <p>Cửa hàng tiện ích</p>
+                </div>
+                <span class="product-count-badge" id="productCountBadge">0 sản phẩm</span>
+            </div>
+            <div class="header-right">
+                <button class="cart-btn" id="openCart">
+                    🛍️ <span class="cart-count" id="cartCount">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Sub Header -->
+        <div class="sub-header">
+            <div class="sub-header-left">
+                <select class="category-select" id="categoryFilter">
+                    <option value="all">Tất cả</option>
+                    <option value="GAME">GAME</option>
+                    <option value="AIMLOCK">AIMLOCK</option>
+                    <option value="DPI">DPI</option>
+                    <option value="TỐI ƯU">TỐI ƯU</option>
+                    <option value="IOS">IOS</option>
+                </select>
+            </div>
+            <button class="collapse-btn">Thu gọn ▸</button>
+        </div>
+
+        <!-- Product Grid -->
+        <main>
+            <div class="product-grid" id="productGrid"></div>
+        </main>
+
+        <!-- Overlay giỏ hàng -->
+        <div class="cart-overlay" id="cartOverlay">
+            <div class="cart-panel">
+                <div class="cart-header">
+                    <h2>Giỏ hàng</h2>
+                    <button class="close-btn" id="closeCart">&times;</button>
+                </div>
+                <div class="cart-items" id="cartItems"></div>
+                <div class="cart-total">
+                    <span>Tổng cộng:</span>
+                    <span id="cartTotal">0 ₫</span>
+                </div>
+                <button class="checkout-btn" id="checkoutBtn">Thanh toán</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== DỮ LIỆU SẢN PHẨM ====================
+        var products = [
+            {
+                id: 1,
+                category: 'GAME',
+                name: 'Định vị moco',
+                duration: 'VĨNH VIỄN',
+                sold: 99,
+                price: 0,
+                stock: 999,
+                badge: 'HOT',
+                img: 'freefire',
+                downloadLink: 'https://www.mediafire.com/file/rbh9kfdmzz9wnh4/Dragon_Injector_V2.apk/file',
+                downloadText: 'Tải APK'
+            },
+            { id: 2, category: 'TỐI ƯU', name: 'File tối ưu giảm lag ADR', duration: 'MỚI NHẤT', sold: 150, price: 0, stock: 999, badge: 'HOT', img: 'file', downloadLink: 'https://link4m.com/4mZKZR', downloadText: 'Tải Xuống' },
+            { id: 3, category: 'TỐI ƯU', name: 'File nhạy cho ADR máy yếu', duration: 'MỚI NHẤT', sold: 89, price: 0, stock: 999, badge: '', img: 'file', downloadLink: 'https://link4m.com/t35Dtr', downloadText: 'Tải Xuống' },
+            { id: 4, category: 'TRỢ NĂNG', name: 'File trợ năng SS', duration: 'MỚI NHẤT', sold: 200, price: 0, stock: 999, badge: 'HOT', img: 'file', downloadLink: 'https://link4m.com/vTCRA', downloadText: 'Tải Xuống' },
+            { id: 5, category: 'REDMI', name: 'File Redmi', duration: 'MỚI NHẤT', sold: 45, price: 0, stock: 999, badge: '', img: 'file', downloadLink: 'https://link4m.com/vOhZitQA', downloadText: 'Tải Xuống' },
+            { id: 6, category: 'OPPO', name: 'File Oppo', duration: 'MỚI NHẤT', sold: 60, price: 0, stock: 999, badge: '', img: 'file', downloadLink: 'https://link4m.com/32HsAJ', downloadText: 'Tải Xuống' },
+            { id: 7, category: 'NHẠY', name: 'File nhạy ngày', duration: 'MỚI NHẤT', sold: 120, price: 0, stock: 999, badge: 'HOT', img: 'file', downloadLink: 'https://link4m.com/HCiWS62T', downloadText: 'Tải Xuống' },
+            { id: 8, category: 'AIMLOCK', name: 'File Aimlock 💝', duration: 'MỚI NHẤT', sold: 300, price: 0, stock: 999, badge: 'HOT', img: 'aim', downloadLink: 'https://link4m.com/V6Jii8', downloadText: 'Tải Xuống' },
+            { id: 9, category: 'DPI', name: 'DPI Oppo ngày', duration: 'MỚI NHẤT', sold: 70, price: 0, stock: 999, badge: '', img: 'file', downloadLink: 'https://link4m.com/A5YS6yK', downloadText: 'Tải Xuống' },
+            { id: 10, category: 'AIMLOCK', name: 'Aimlock 2.0 ngày 18/3', duration: '18/03', sold: 180, price: 0, stock: 999, badge: 'MỚI', img: 'aim', downloadLink: 'https://link4m.com/38d59', downloadText: 'Tải Xuống' },
+            { id: 11, category: 'AIMLOCK', name: 'Aimlock Mode IOS&ADR', duration: 'MỚI NHẤT', sold: 210, price: 0, stock: 999, badge: 'HOT', img: 'aim', downloadLink: 'https://link4m.com/qLFbt', downloadText: 'Tải Xuống' },
+            { id: 12, category: 'AIMLOCK', name: 'Aimlock Venia', duration: 'MỚI NHẤT', sold: 95, price: 0, stock: 999, badge: '', img: 'aim', downloadLink: 'https://link4m.com/QbY7AjW6', downloadText: 'Tải Xuống' },
+            { id: 13, category: 'AIMLOCK', name: 'Aimlock Musy', duration: 'MỚI NHẤT', sold: 110, price: 0, stock: 999, badge: 'MỚI', img: 'aim', downloadLink: 'https://link4m.com/S0E57', downloadText: 'Tải Xuống' },
+            { id: 14, category: 'KODER', name: 'Koder Pro', duration: 'MỚI NHẤT', sold: 40, price: 0, stock: 999, badge: '', img: 'file', downloadLink: 'https://link4m.com/cvV1E', downloadText: 'Tải Xuống' },
+            { id: 15, category: 'AIMLOCK', name: 'File Aimlock 4/3', duration: '04/03', sold: 85, price: 0, stock: 999, badge: '', img: 'aim', downloadLink: 'https://link4m.com/FS3xL5l', downloadText: 'Tải Xuống' },
+            { id: 16, category: 'AIMLOCK', name: 'Aimlock v2', duration: 'MỚI NHẤT', sold: 130, price: 0, stock: 999, badge: '', img: 'aim', downloadLink: 'https://link4m.com/CKNQD', downloadText: 'Tải Xuống' },
+            { id: 17, category: 'AIMLOCK', name: 'Aimlock Bin', duration: 'MỚI NHẤT', sold: 55, price: 0, stock: 999, badge: '', img: 'aim', downloadLink: 'https://link4m.com/zoeczLvi', downloadText: 'Tải Xuống' },
+            { id: 18, category: 'IOS', name: 'Aimlock IOS', duration: 'MỚI NHẤT', sold: 160, price: 0, stock: 999, badge: 'HOT', img: 'aim', downloadLink: 'https://link4m.com/AI2u7', downloadText: 'Tải Xuống' },
+            { id: 19, category: 'DPI', name: 'DPI Redmi', duration: 'MỚI NHẤT', sold: 75, price: 0, stock: 999, badge: '', img: 'file', downloadLink: 'https://link4m.com/8jfhxGcx', downloadText: 'Tải Xuống' },
+            { id: 20, category: 'DPI', name: 'DPI Oppo', duration: 'MỚI NHẤT', sold: 90, price: 0, stock: 999, badge: '', img: 'file', downloadLink: 'https://link4m.com/FUyFizy', downloadText: 'Tải Xuống' }
+        ];
+
+        // ==================== QUẢN LÝ GIỎ HÀNG ====================
+        function loadCart() {
+            var data = localStorage.getItem('cart');
+            return data ? JSON.parse(data) : [];
+        }
+
+        function saveCart(cart) {
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+
+        // ==================== BIẾN TOÀN CỤC ====================
+        var cart = [];
+        var currentFilter = 'all';
+
+        // ==================== DOM ELEMENTS ====================
+        var productGrid = document.getElementById('productGrid');
+        var productCountBadge = document.getElementById('productCountBadge');
+        var cartOverlay = document.getElementById('cartOverlay');
+        var openCartBtn = document.getElementById('openCart');
+        var closeCartBtn = document.getElementById('closeCart');
+        var cartItemsEl = document.getElementById('cartItems');
+        var cartCountEl = document.getElementById('cartCount');
+        var cartTotalEl = document.getElementById('cartTotal');
+        var checkoutBtn = document.getElementById('checkoutBtn');
+        var categoryFilter = document.getElementById('categoryFilter');
+
+        // ==================== HÀM TIỆN ÍCH ====================
+        function formatPrice(price) {
+            if (price === 0) return 'Miễn phí';
+            return price.toLocaleString('vi-VN') + ' ₫';
+        }
+
+        function showShop() {
+            productCountBadge.textContent = products.length + ' sản phẩm';
+            cart = loadCart();
+            renderProducts();
+            updateCartUI();
+        }
+
+        // ==================== HIỂN THỊ SẢN PHẨM ====================
+        function renderProducts() {
+            var html = '';
+            var filteredProducts = products;
+
+            if (currentFilter !== 'all') {
+                filteredProducts = products.filter(function(p) {
+                    return p.category === currentFilter;
+                });
+            }
+
+            for (var i = 0; i < filteredProducts.length; i++) {
+                var p = filteredProducts[i];
+                var imageHTML = '';
+                
+                if (p.img === 'freefire') {
+                    imageHTML = '<div class="card-image">';
+                    if (p.badge) {
+                        imageHTML += '<span class="badge">' + p.badge + '</span>';
+                    }
+                    imageHTML += '<div class="freefire-icon">🔥</div></div>';
+                } else if (p.img === 'aim') {
+                    imageHTML = '<div class="card-image">';
+                    if (p.badge) {
+                        imageHTML += '<span class="badge">' + p.badge + '</span>';
+                    }
+                    imageHTML += '<div style="font-size: 2.5rem;">🎯</div></div>';
+                } else {
+                    imageHTML = '<div class="card-image">';
+                    if (p.badge) {
+                        imageHTML += '<span class="badge">' + p.badge + '</span>';
+                    }
+                    imageHTML += '<div style="font-size: 2.5rem;">📁</div></div>';
+                }
+
+                var buttonHTML = '';
+                if (p.downloadLink) {
+                    buttonHTML = '<a href="' + p.downloadLink + '" target="_blank" class="card-btn download">' + (p.downloadText || 'Tải xuống') + '</a>';
+                } else {
+                    buttonHTML = '<button class="card-btn" data-id="' + p.id + '">Thêm vào giỏ</button>';
+                }
+
+                html += '<div class="product-card">' +
+                            imageHTML +
+                            '<div class="card-content">' +
+                                '<div class="card-category">' + p.category + '</div>' +
+                                '<div class="card-title">' + p.name + '</div>' +
+                                '<div class="card-meta">' +
+                                    '<span>' + p.duration + '</span>' +
+                                    '<span>' + p.sold + ' đã bán</span>' +
+                                '</div>' +
+                                '<div class="card-bottom">' +
+                                    '<div class="card-price">' + formatPrice(p.price) + '</div>' +
+                                    '<div class="card-stock">Còn ' + p.stock + ' sản phẩm</div>' +
+                                    buttonHTML +
+                                '</div>' +
+                            '</div>' +
+                        '</div>';
+            }
+            productGrid.innerHTML = html;
+        }
+
+        // ==================== CẬP NHẬT GIỎ HÀNG ====================
+        function updateCartUI() {
+            var totalItems = 0;
+            var totalPrice = 0;
+            for (var i = 0; i < cart.length; i++) {
+                totalItems += cart[i].qty;
+                totalPrice += cart[i].price * cart[i].qty;
+            }
+            
+            cartCountEl.textContent = totalItems;
+
+            if (cart.length === 0) {
+                cartItemsEl.innerHTML = '<div class="empty-cart">Giỏ hàng trống</div>';
+            } else {
+                var html = '';
+                for (var i = 0; i < cart.length; i++) {
+                    var item = cart[i];
+                    html += '<div class="cart-item">' +
+                                '<div class="cart-item-info">' +
+                                    '<span class="cart-item-name">' + item.name + '</span>' +
+                                    '<span class="cart-item-price">' + formatPrice(item.price) + '</span>' +
+                                '</div>' +
+                                '<div class="cart-item-qty">' +
+                                    '<button class="qty-btn" data-id="' + item.id + '" data-action="decrease">−</button>' +
+                                    '<span>' + item.qty + '</span>' +
+                                    '<button class="qty-btn" data-id="' + item.id + '" data-action="increase">+</button>' +
+                                    '<button class="remove-btn" data-id="' + item.id + '" data-action="remove">🗑️</button>' +
+                                '</div>' +
+                            '</div>';
+                }
+                cartItemsEl.innerHTML = html;
+            }
+
+            cartTotalEl.textContent = formatPrice(totalPrice);
+        }
+
+        // ==================== THÊM VÀO GIỎ ====================
+        function addToCart(id) {
+            var product = null;
+            for (var i = 0; i < products.length; i++) {
+                if (products[i].id === id) {
+                    product = products[i];
+                    break;
+                }
+            }
+            if (!product) return;
+
+            var existing = null;
+            for (var i = 0; i < cart.length; i++) {
+                if (cart[i].id === id) {
+                    existing = cart[i];
+                    break;
+                }
+            }
+
+            if (existing) {
+                existing.qty++;
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    qty: 1
+                });
+            }
+            saveCart(cart);
+            updateCartUI();
+            openCart();
+        }
+
+        // ==================== THAY ĐỔI SỐ LƯỢNG ====================
+        function changeQty(id, action) {
+            var item = null;
+            var index = -1;
+            for (var i = 0; i < cart.length; i++) {
+                if (cart[i].id === id) {
+                    item = cart[i];
+                    index = i;
+                    break;
+                }
+            }
+            if (!item) return;
+
+            if (action === 'increase') {
+                item.qty++;
+            } else if (action === 'decrease') {
+                item.qty--;
+                if (item.qty <= 0) {
+                    cart.splice(index, 1);
+                }
+            } else if (action === 'remove') {
+                cart.splice(index, 1);
+            }
+            saveCart(cart);
+            updateCartUI();
+        }
+
+        // ==================== MỞ / ĐÓNG GIỎ HÀNG ====================
+        function openCart() {
+            cartOverlay.classList.add('open');
+        }
+
+        function closeCart() {
+            cartOverlay.classList.remove('open');
+        }
+
+        // ==================== THANH TOÁN ====================
+        function checkout() {
+            if (cart.length === 0) {
+                alert('Giỏ hàng của bạn đang trống!');
+                return;
+            }
+            var totalPrice = 0;
+            for (var i = 0; i < cart.length; i++) {
+                totalPrice += cart[i].price * cart[i].qty;
+            }
+            alert('Cảm ơn bạn đã mua hàng!\nTổng thanh toán: ' + formatPrice(totalPrice));
+            cart = [];
+            saveCart(cart);
+            updateCartUI();
+            closeCart();
+        }
+
+        // ==================== GẮN SỰ KIỆN ====================
+        categoryFilter.addEventListener('change', function(e) {
+            currentFilter = e.target.value;
+            renderProducts();
+        });
+
+        productGrid.addEventListener('click', function (e) {
+            var target = e.target.closest('button') || e.target.closest('a');
+            if (!target) return;
+            
+            if (target.classList.contains('card-btn') && !target.classList.contains('download')) {
+                var id = Number(target.dataset.id);
+                addToCart(id);
+            }
+        });
+
+        cartItemsEl.addEventListener('click', function (e) {
+            var target = e.target.closest('button');
+            if (!target) return;
+            var id = Number(target.dataset.id);
+            var action = target.dataset.action;
+            if (id && action) {
+                changeQty(id, action);
+            }
+        });
+
+        openCartBtn.addEventListener('click', openCart);
+        closeCartBtn.addEventListener('click', closeCart);
+        cartOverlay.addEventListener('click', function (e) {
+            if (e.target === cartOverlay) closeCart();
+        });
+        checkoutBtn.addEventListener('click', checkout);
+
+        // ==================== KHỞI TẠO ====================
+        showShop();
+    </script>
+</body>
+</html>            display: flex;
             align-items: center;
             gap: 12px;
         }
