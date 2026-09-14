@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kho Tài Nguyên & File Game</title>
+    <style>
+        :root {
+            --bg-dark: #0b1120;
+            --bg-card: #151e2e;
+            --border-color: #1e293b;
+            --text-white: #ffffff;
+            --text-gray: #94a3b8;
+            --text-blue: #3b82f6;
+            --text-green: #22c55e;
+            --btn-bg: #2563eb;
+            --btn-hover: #1d4ed8;
+            --badge-bg: #1e293b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-white);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            line-height: 1.5;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: var(--text-white);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            color: var(--text-gray);
+            font-size: 14px;
+        }
+
+        /* Category Title */
+        .category-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-blue);
+            margin: 25px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 16px;
+            background-color: var(--text-blue);
+            border-radius: 2px;
+        }
+
+        /* Link List */
+        .link-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .link-item {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .link-item:hover {
+            border-color: #334155;
+            background-color: #1a2436;
+            transform: translateY(-1px);
+        }
+
+        .link-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .link-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-white);
+        }
+
+        .link-desc {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        .btn-download {
+            background-color: var(--btn-bg);
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-download:hover {
+            background-color: var(--btn-hover);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .link-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .btn-download {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <!-- Header -->
+    <div class="header">
+        <h1>⚡ Kho Tài Nguyên & File ⚡</h1>
+        <p>Tổng hợp các file tối ưu, DPI, Aimlock và Mod game mới nhất</p>
+    </div>
+
+    <!-- DANH MỤC 1: TỐI ƯU & CẤU HÌNH -->
+    <div class="category-title">TỐI ƯU & CẤU HÌNH</div>
+    <div class="link-list">
+        <div class="link-item">
+            <div class="link-info">
+                <span class="link-name">FILE TỐI ƯU GIẢM LAG ADR</span>
+                <span class="link-desc">Dành cho Android - Giảm lag, mượt máy</span>
+            </div>
+            <a href="https://link4m.com/4mZKZR" target="_blank" class="btn-download">📥 Tải Ngay</a>
+        </div>
+        <div class="link-item">
+            <div class="link-info">
+                <span class="link-name">FILE NHẠY CHO ADR MÁY YẾU</span>
+                <span class="link-desc">Tăng độ nhạy cảm ứng cho máy cấu hình thấp</span>
+            </div>
+            <a href="https://link4m.com/t35Dtr" target="_blank" class="btn-download">📥 Tải Ngay</a>
+        </div>
+        <div class="link-item">
+            <div class="link-info">
+                <span class="link-name">LINK FILE TRỢ NĂNG SS</span>
+                <span class="link-desc">Hỗ trợ trợ năng, tối ưu thao tác</span>
+            </div>
+            <a href="https://link4m.com/vTCRA" target="_blank" class="btn-download">📥 Tải Ngay</a>
+        </div>
+        <div class="link-item">
+            <div class="link-info">
+                <span class="link-name">File nhạy ngày</span>
+                <span class="link-desc">Cập nhật độ nhạy mới nhất</span>
+            </div>
+            <a href="https://link4m.com/HCiWS62T" target="_blank" class="btn-download">📥 Tải Ngay</a>
+        </div>
+    </div>
+
+    <!-- DANH MỤC 2: FILE THEO HÃNG MÁY -->
+    <div class="category-title">FILE THEO HÃNG MÁY</div>
+    <div class="link-list">
+        <div class="link-item">
+            <div class="link-info">
+                <span class="link-name">FILE REDMI</span>
+                <span class="link-desc">Tối ưu riêng cho dòng máy Redmi</span>
+            </div>
+            <a href="https://link4m.com/vOhZitQA" target="_blank" class="btn-download">📥 Tải Ngay</a>
+        </div>
+        <div class="link-item">
+            <div class="link-info">
+                <span class="link-name">FILE OPPO</span>
+                <span class="link-desc">Tối ưu riêng cho dòng máy Oppo</span>
+            </div>
+            <a href="https://link4m.com/32HsAJ" target="_blank" class="btn-download">📥 Tải Ngay</a>
+        </div>
+        <div class="link-item">
+            <div class="link-info">
+                <span class="link-name">LINK DPI OPPO NGÀY</span>
+                <span class="link-desc">DPI Oppo cập nhật theo ngày</span>
+            </div>
+            <a href="https://link4m.com/A5YS6yK" target="_blank" class="btn-download">📥 Tải Ngay</a>
+        </div>
+        <div class="link-item">
+            <div class="link-info">
+                <span class="link-name">DPI REDMI</span>
+                <span class="link-desc">DPI dành riêng cho Redmi</span>
+            </div>
+            <a href="https://link4m.com/8jfhxGcx" target="_blank" class="btn-download">📥 Tải Ngay</a>
+        </div>
+        <div class="link-item">
+            <div class="link-info">
+                <span class="link-name">DPI OPPO</span>
+                <span class="link-desc">DPI dành riêng cho Oppo</span>
+            </div>
+            <a href="https://link4m.com/FUyFizy" target="_blank" class="btn-download">📥 Tải Ngay</a>
+        </div>
+    </div>
+
+    <!-- DANH MỤC 3: AIMLOCK & MOD -->
+    <div class="category-title">AIMLOCK & MOD</div>
+    <div class="link-list">
+        <div class="link-item">
+            <div class="link-info">
+                <span class="link-name">Link FILE AIMLOCK 💝</span>
+                <span class="link-desc">File Aimlock cơ bản</span>
+            </div>
+            <a href="https://link4m.com/V6Jii8" target="_blank" class="btn-download">📥 Tải Ngay</a>
+        </div>
+        <div class="link-item">
+            <div class="link-info">
+                <span class="link-name">LINK AIMLOCK 2.0 (18/3)</span>
+                <span class="link-desc">Bản cập nhật Aimlock 2.0 mới nhất</span>
+            </div>
+            <a href="https://link4m.com/38d59" target="_blank" class="btn-download">📥 Tải Ngay</a>
+        </div>
+        <div class="link-item">
+            <div class="link-info">
+                <span class="link-name">AIMLOCK MODE IOS & ADR</span>
+                <span class="link-desc">Hỗ trợ cả hệ điều hành iOS và Android</span>
+            </div>
+            <a href="https://link4m.com/qLFbt" target="_blank" class="btn-download">📥 Tải Ngay</a>
+        </div>
+        <div class="link-item">
+            <div class="link-info">
+                <span class="link-name">LINK AIMLOCK (Không tên)</span>
+                <span class="link-desc">Link dự phòng / Cập nhật</span>
+            </div>
+            <a href="https://link4m.com/rkQyk0Ex" target="_blank" class="btn-download">📥 Tải Ngay</a>
+        </div>
+        <div class="link-item">
+            <div class="link-info">
+                <span class="link-name">AIMLOCK VENIA</span>
+                <span class="link-desc">Phiên bản Aimlock Venia</span>
+            </div>
+            <a href="https://link4m.com/QbY7AjW6" target="_blank" class="btn-download">📥 Tải Ngay</a>
+        </div>
+        <div class="link-item">
+            <div class="link-info">
+                <span class="link-name">AIMLOCK MUSY (Mới)</span>
+                <span class="link-desc">Bản Aimlock Musy mới nhất</span>
+            </div>
+            <a href="https://link4m.com/S0E57" target="_blank" class="btn-download">📥 Tải Ngay</a>
+        </div>
+        <div class="link-item">
+            <div class="link-info">
+                <span class="link-name">LINK KODER PRO</span>
+                <span class="link-desc">Công cụ Koder Pro</span>
+            </div>
+            <a href="https://link4m.com/cvV1E" target="_blank" class="btn-download">📥 Tải Ngay</a>
+        </div>
+        <div class="link-item">
+            <div class="link-info">
+                <span class="link-name">FILE AIMLOCK 4/3</span>
+                <span class="link-desc">Bản cập nhật ngày 4/3</span>
+            </div>
+            <a href="https://link4m.com/FS3xL5l" target="_blank" class="btn-download">📥 Tải Ngay</a>
+        </div>
+        <div class="link-item">
+            <div class="link-info">
+                <span class="link-name">Aimlock v2</span>
+                <span class="link-desc">Phiên bản Aimlock v2</span>
+            </div>
+            <a href="https://link4m.com/CKNQD" target="_blank" class="btn-download">📥 Tải Ngay</a>
+        </div>
+        <div class="link-item">
+            <div class="link-info">
+                <span class="link-name">Aimlock Bin</span>
+                <span class="link-desc">Định dạng file .bin</span>
+            </div>
+            <a href="https://link4m.com/zoeczLvi" target="_blank" class="btn-download">📥 Tải Ngay</a>
+        </div>
+        <div class="link-item">
+            <div class="link-info">
+                <span class="link-name">Aimlock iOS</span>
+                <span class="link-desc">Dành riêng cho thiết bị iOS</span>
+            </div>
+            <a href="https://link4m.com/AI2u7" target="_blank" class="btn-download">📥 Tải Ngay</a>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
