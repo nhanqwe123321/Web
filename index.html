@@ -4,72 +4,70 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cửa Hàng</title>
-    <style type="text/css">
-        <!--
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
+    <!-- Liên kết tới file CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-        body {
-            background-color: #0a0e17;
-            color: #c9d1d9;
-            min-height: 100vh;
-            padding: 20px 16px;
-        }
+    <!-- ========== SHOP SECTION ========== -->
+    <div id="shopSection" class="shop-container">
+        <!-- Top Header -->
+        <div class="top-header">
+            <div class="header-left">
+                <div class="logo-icon">⬡</div>
+                <div class="brand-info">
+                    <p>Cửa hàng tiện ích</p>
+                </div>
+                <span class="product-count-badge" id="productCountBadge">0 sản phẩm</span>
+            </div>
+            <div class="header-right">
+                <button class="cart-btn" id="openCart">
+                    🛍️ <span class="cart-count" id="cartCount">0</span>
+                </button>
+            </div>
+        </div>
 
-        /* ---------- SHOP ---------- */
-        .shop-container {
-            width: 100%;
-            max-width: 900px;
-            margin: 0 auto;
-        }
+        <!-- Sub Header -->
+        <div class="sub-header">
+            <div class="sub-header-left">
+                <select class="category-select" id="categoryFilter">
+                    <option value="all">Tất cả</option>
+                    <option value="GAME">GAME</option>
+                    <option value="AIMLOCK">AIMLOCK</option>
+                    <option value="DPI">DPI</option>
+                    <option value="TỐI ƯU">TỐI ƯU</option>
+                    <option value="IOS">IOS</option>
+                </select>
+            </div>
+            <button class="collapse-btn">Thu gọn ▸</button>
+        </div>
 
-        /* Top Header */
-        .top-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
+        <!-- Product Grid -->
+        <main>
+            <div class="product-grid" id="productGrid"></div>
+        </main>
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        <!-- Overlay giỏ hàng -->
+        <div class="cart-overlay" id="cartOverlay">
+            <div class="cart-panel">
+                <div class="cart-header">
+                    <h2>Giỏ hàng</h2>
+                    <button class="close-btn" id="closeCart">&times;</button>
+                </div>
+                <div class="cart-items" id="cartItems"></div>
+                <div class="cart-total">
+                    <span>Tổng cộng:</span>
+                    <span id="cartTotal">0 ₫</span>
+                </div>
+                <button class="checkout-btn" id="checkoutBtn">Thanh toán</button>
+            </div>
+        </div>
+    </div>
 
-        .logo-icon {
-            width: 36px;
-            height: 36px;
-            background: #1f2937;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #00ff88;
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
-        .brand-info p {
-            font-size: 0.85rem;
-            color: #3b82f6;
-            font-weight: bold;
-        }
-
-        .product-count-badge {
-            background: #1e3a5f;
-            color: #60a5fa;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
+    <!-- Liên kết tới file JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>        }
 
         .header-right {
             display: flex;
