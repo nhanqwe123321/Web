@@ -1,0 +1,2365 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cửa Hàng Tiện Ích</title>
+<style>
+:root {
+    --bg-body: #0a0e17;
+    --bg-card: #131a26;
+    --bg-input: #1f2937;
+    --border-color: #21262d;
+    --border-hover: #30363d;
+    --text-main: #c9d1d9;
+    --text-white: #fff;
+    --text-muted: #8b949e;
+    --blue: #3b82f6;
+    --blue-hover: #2563eb;
+    --green: #00ff88;
+    --orange: #fbbf24;
+    --danger: #f87171;
+    --purple: #a855f7;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    min-height: 100vh;
+    padding: 20px 16px;
+    line-height: 1.5;
+    overflow-x: hidden;
+}
+
+/* ================= WELCOME SCREEN ================= */
+.welcome-overlay {
+    position: fixed;
+    inset: 0;
+    background: #060a12;
+    z-index: 99999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    overflow: hidden;
+    transition: opacity .5s ease .1s, visibility .5s ease .1s;
+}
+
+.welcome-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* ============ 5 FALLING PEOPLE INTRO ============ */
+.falling-intro {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 5;
+}
+
+.fall-person {
+    position: absolute;
+    top: -120px;
+    width: 60px;
+    height: 100px;
+    opacity: 0;
+    animation: fallDown 2s cubic-bezier(0.55, 0.05, 0.65, 0.95) forwards;
+}
+
+.fall-person svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.6));
+}
+
+.fall-person:nth-child(1) { left: 5%; animation-delay: 0s; color: #60a5fa; }
+.fall-person:nth-child(2) { left: 25%; animation-delay: 0.15s; color: #f472b6; }
+.fall-person:nth-child(3) { left: 45%; animation-delay: 0.3s; color: #fbbf24; }
+.fall-person:nth-child(4) { left: 65%; animation-delay: 0.45s; color: #34d399; }
+.fall-person:nth-child(5) { left: 85%; animation-delay: 0.6s; color: #c084fc; }
+
+@keyframes fallDown {
+    0% { top: -120px; opacity: 0; transform: rotate(0deg) scale(0.8); }
+    15% { opacity: 1; }
+    60% { top: calc(50% - 50px); opacity: 1; transform: rotate(180deg) scale(1); }
+    72% { top: calc(50% - 80px); transform: rotate(360deg) scale(1); }
+    85% { top: calc(50% - 50px); transform: rotate(450deg) scale(1); }
+    100% { top: calc(100% + 100px); opacity: 0; transform: rotate(720deg) scale(0.7); }
+}
+
+/* Welcome box */
+.welcome-box {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 460px;
+    background: rgba(19, 26, 38, 0.7);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-radius: 24px;
+    padding: 36px 28px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    text-align: center;
+    opacity: 0;
+    animation: welcomeFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.4s forwards;
+    overflow: hidden;
+    transform-origin: center center;
+}
+
+@keyframes welcomeFadeIn {
+    from { opacity: 0; transform: translateY(30px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ============ HIỆU ỨNG BIẾN THÀNH TRÁI BÓNG ============ */
+.welcome-box.ball-mode {
+    animation: ballDisappear 1.4s cubic-bezier(0.5, 0, 0.75, 0) forwards;
+    transition: none !important;
+    pointer-events: none;
+    border: none;
+}
+
+.welcome-box.ball-mode > * {
+    animation: contentFadeOut 0.4s forwards;
+}
+
+@keyframes contentFadeOut {
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(0.85); }
+}
+
+@keyframes ballDisappear {
+    /* Giữ nguyên hình dạng ban đầu 25% thời gian đầu để nội dung mờ đi */
+    0% {
+        border-radius: 24px;
+        padding: 36px 28px;
+        transform: scale(1) translate(0, 0) rotate(0deg);
+        opacity: 1;
+        background: rgba(19, 26, 38, 0.7);
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+    }
+    25% {
+        border-radius: 24px;
+        padding: 36px 28px;
+        transform: scale(1) translate(0, 0) rotate(0deg);
+        opacity: 1;
+        background: rgba(19, 26, 38, 0.7);
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+    }
+    /* Bắt đầu co thành bóng */
+    40% {
+        border-radius: 50%;
+        padding: 0;
+        width: 120px;
+        height: 120px;
+        transform: scale(1) translate(0, 20px) rotate(80deg);
+        opacity: 1;
+        background: radial-gradient(circle at 30% 30%, #60a5fa, #2563eb);
+        box-shadow: 0 0 40px rgba(37, 99, 235, 0.8), inset -10px -10px 30px rgba(0,0,0,0.4);
+    }
+    /* Lăn qua phải */
+    60% {
+        border-radius: 50%;
+        padding: 0;
+        width: 120px;
+        height: 120px;
+        transform: scale(0.85) translate(80px, 180px) rotate(280deg);
+        opacity: 1;
+        background: radial-gradient(circle at 30% 30%, #c084fc, #7c3aed);
+        box-shadow: 0 0 40px rgba(168, 85, 247, 0.8), inset -10px -10px 30px rgba(0,0,0,0.4);
+    }
+    /* Nảy lên */
+    80% {
+        border-radius: 50%;
+        padding: 0;
+        width: 120px;
+        height: 120px;
+        transform: scale(0.6) translate(180px, 60px) rotate(480deg);
+        opacity: 1;
+        background: radial-gradient(circle at 30% 30%, #c084fc, #7c3aed);
+        box-shadow: 0 0 40px rgba(168, 85, 247, 0.8), inset -10px -10px 30px rgba(0,0,0,0.4);
+    }
+    /* Bay hẳn ra ngoài và biến mất */
+    100% {
+        border-radius: 50%;
+        padding: 0;
+        width: 120px;
+        height: 120px;
+        transform: scale(0.1) translate(500px, -400px) rotate(720deg);
+        opacity: 0;
+        background: radial-gradient(circle at 30% 30%, #c084fc, #7c3aed);
+        box-shadow: 0 0 40px rgba(168, 85, 247, 0);
+    }
+}
+
+/* Nếu đã có phiên đăng nhập, không chạy animation */
+.welcome-overlay.hidden .welcome-box { animation: none; }
+
+.welcome-logo-wrap {
+    position: relative;
+    width: 80px; height: 80px;
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.welcome-logo-glow {
+    position: absolute;
+    inset: 0;
+    border-radius: 22px;
+    background: conic-gradient(from 0deg, #00ff88, #2563eb, #a855f7, #00ff88);
+    filter: blur(16px);
+    opacity: 0.6;
+    animation: rotate 6s linear infinite;
+}
+
+@keyframes rotate { to { transform: rotate(360deg); } }
+
+.welcome-logo {
+    position: relative;
+    width: 80px; height: 80px;
+    background: linear-gradient(135deg, #131a26, #0d1117);
+    border-radius: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #00ff88;
+    font-size: 2.2rem;
+    font-weight: bold;
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+}
+
+.welcome-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.3px;
+}
+
+.welcome-subtitle {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 18px;
+}
+
+/* ================= TUG SCENE ================= */
+.tug-scene {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 6px;
+    padding: 4px 0;
+    overflow: hidden;
+}
+
+.tug-scene.hidden { display: none; }
+
+.pull-line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+    width: 100%;
+}
+
+.pull-line-1 { animation: slideInLeft 1.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+.pull-line-2 {
+    opacity: 0;
+    animation: slideInRight 1.3s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s forwards;
+}
+
+@keyframes slideInLeft {
+    0% { transform: translateX(-130vw); opacity: 0; }
+    40% { opacity: 1; }
+    100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInRight {
+    0% { transform: translateX(130vw); opacity: 0; }
+    40% { opacity: 1; }
+    100% { transform: translateX(0); opacity: 1; }
+}
+
+.puller {
+    flex-shrink: 0;
+    width: 42px;
+    height: 72px;
+    position: relative;
+    transform-origin: bottom center;
+}
+
+.pull-line-1 .puller { animation: tugLeft 1.3s ease-in-out 1.4s infinite alternate; }
+.pull-line-2 .puller { animation: tugRight 1.3s ease-in-out 1.6s infinite alternate; }
+
+@keyframes tugLeft {
+    0% { transform: translateX(0) rotate(0deg) scale(1); }
+    100% { transform: translateX(-3px) rotate(-3deg) scale(0.98); }
+}
+
+@keyframes tugRight {
+    0% { transform: translateX(0) rotate(0deg) scale(1); }
+    100% { transform: translateX(3px) rotate(3deg) scale(0.98); }
+}
+
+.stick-svg {
+    width: 42px;
+    height: 72px;
+    overflow: visible;
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5));
+}
+
+.pull-line-1 .stick-svg { color: #60a5fa; }
+.pull-line-2 .stick-svg { color: #c084fc; }
+
+.sweat {
+    position: absolute;
+    top: -4px;
+    font-size: 0.75rem;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.pull-line-1 .sweat { right: 2px; animation: sweatDrop 1.3s infinite; }
+.pull-line-2 .sweat { left: 2px; animation: sweatDrop 1.3s 0.65s infinite; }
+
+@keyframes sweatDrop {
+    0%, 55% { opacity: 0; transform: translateY(0) scale(0.8); }
+    65% { opacity: 1; transform: translateY(-2px) scale(1.1); }
+    100% { opacity: 0; transform: translateY(-12px) scale(0.6); }
+}
+
+.puller::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 26px;
+    height: 4px;
+    background: rgba(148, 163, 184, 0.35);
+    border-radius: 50%;
+    filter: blur(3px);
+    animation: dustPuff 1.3s infinite;
+}
+
+@keyframes dustPuff {
+    0%, 100% { opacity: 0.3; transform: translateX(-50%) scaleX(1); }
+    50% { opacity: 0.7; transform: translateX(-50%) scaleX(1.5); }
+}
+
+.rope-segment {
+    flex: 0 0 18px;
+    height: 6px;
+    background: repeating-linear-gradient(
+        90deg,
+        #8b5a2b 0px, #8b5a2b 4px,
+        #a0522d 4px, #a0522d 8px,
+        #6b4423 8px, #6b4423 12px
+    );
+    border-radius: 3px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -1px 2px rgba(0, 0, 0, 0.3);
+    animation: ropePulse 1.3s infinite ease-in-out alternate;
+}
+
+@keyframes ropePulse {
+    0% { transform: scaleY(1); }
+    100% { transform: scaleY(1.3); }
+}
+
+.choice-btn {
+    position: relative;
+    flex: 1;
+    padding: 12px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    background: rgba(19, 26, 38, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-align: left;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+    font-family: inherit;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    min-width: 0;
+}
+
+.choice-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 0;
+}
+
+.choice-btn.guest::before {
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.18), rgba(37, 99, 235, 0.05));
+}
+
+.choice-btn.admin::before {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.18), rgba(168, 85, 247, 0.05));
+}
+
+.choice-btn:hover::before { opacity: 1; }
+
+.choice-btn:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
+}
+
+.choice-btn:active { transform: translateY(0); }
+
+.btn-icon-wrap {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    z-index: 1;
+    transition: transform 0.3s;
+}
+
+.choice-btn.guest .btn-icon-wrap {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    box-shadow: 0 5px 14px rgba(37, 99, 235, 0.4);
+}
+
+.choice-btn.admin .btn-icon-wrap {
+    background: linear-gradient(135deg, #a855f7, #7c3aed);
+    box-shadow: 0 5px 14px rgba(168, 85, 247, 0.4);
+}
+
+.choice-btn:hover .btn-icon-wrap { transform: scale(1.08) rotate(-5deg); }
+
+.btn-icon { font-size: 1.15rem; line-height: 1; }
+
+.btn-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    z-index: 1;
+    min-width: 0;
+}
+
+.btn-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.btn-desc {
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.btn-arrow {
+    font-size: 1rem;
+    color: var(--text-muted);
+    transition: all 0.3s;
+    z-index: 1;
+    flex-shrink: 0;
+}
+
+.choice-btn:hover .btn-arrow {
+    color: #fff;
+    transform: translateX(3px);
+}
+
+/* Admin Password Form */
+.admin-pwd-form {
+    display: none;
+    text-align: left;
+    margin-top: 8px;
+}
+
+.admin-pwd-form.show {
+    display: block;
+    animation: formEntry 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes formEntry {
+    from { opacity: 0; transform: translateY(-15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.pwd-header { text-align: center; margin-bottom: 20px; }
+
+.pwd-icon {
+    font-size: 2.2rem;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 0 15px rgba(168, 85, 247, 0.6));
+    animation: pulseIcon 2s infinite ease-in-out;
+}
+
+@keyframes pulseIcon {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+}
+
+.pwd-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+.pwd-subtitle {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.password-input-wrapper {
+    display: flex;
+    align-items: center;
+    background: rgba(13, 17, 23, 0.8);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 14px;
+    padding: 0 16px;
+    margin-bottom: 12px;
+    transition: all 0.3s;
+}
+
+.password-input-wrapper:focus-within {
+    border-color: #a855f7;
+    box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.15);
+    background: rgba(13, 17, 23, 1);
+}
+
+.lock-icon { font-size: 1.1rem; color: var(--purple); margin-right: 12px; }
+
+.password-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 0.95rem;
+    padding: 16px 0;
+    outline: none;
+    font-family: inherit;
+}
+
+.password-input::placeholder { color: var(--text-muted); }
+
+.eye-icon {
+    font-size: 1.1rem;
+    color: var(--purple);
+    cursor: pointer;
+    padding: 8px;
+    user-select: none;
+    transition: transform 0.2s;
+}
+
+.eye-icon:hover { transform: scale(1.15); }
+
+.password-error {
+    color: var(--danger);
+    font-size: 0.8rem;
+    margin-bottom: 12px;
+    display: none;
+    text-align: center;
+    padding: 8px 12px;
+    background: rgba(248, 113, 113, 0.1);
+    border: 1px solid rgba(248, 113, 113, 0.3);
+    border-radius: 8px;
+}
+
+.password-error.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    animation: shake 0.4s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+}
+
+.password-submit {
+    position: relative;
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #a855f7, #7c3aed);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s;
+    box-shadow: 0 8px 25px rgba(168, 85, 247, 0.35);
+    font-family: inherit;
+}
+
+.password-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(168, 85, 247, 0.5);
+}
+
+.submit-arrow { transition: transform 0.3s; }
+.password-submit:hover .submit-arrow { transform: translateX(4px); }
+
+.back-btn {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-family: inherit;
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ================= SHOP ================= */
+.shop-container { width: 100%; max-width: 900px; margin: 0 auto; }
+
+.top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.logo-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--bg-input);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--green);
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.brand-info p { font-size: .85rem; color: var(--blue); font-weight: bold; }
+
+.product-count-badge {
+    background: #1e3a5f;
+    color: #60a5fa;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: .8rem;
+    font-weight: bold;
+}
+
+.admin-badge {
+    background: linear-gradient(135deg, #a855f7, #7c3aed);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: .7rem;
+    font-weight: bold;
+    display: none;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.admin-badge.show { display: inline-block; }
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.admin-btn {
+    background: var(--purple);
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: .8rem;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    gap: 6px;
+    transition: .2s;
+}
+
+.admin-btn.show { display: flex; }
+.admin-btn:hover { background: #9333ea; }
+
+.header-logout-btn {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid var(--danger);
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: .8rem;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    gap: 6px;
+    transition: .2s;
+}
+
+.header-logout-btn.show { display: flex; }
+.header-logout-btn:hover { background: var(--danger); color: #fff; }
+
+.cart-btn {
+    background: var(--bg-input);
+    color: var(--text-white);
+    border: 1px solid var(--border-hover);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: .85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: .2s;
+}
+
+.cart-btn:hover { background: #374151; }
+
+.cart-count {
+    background: var(--blue);
+    color: #fff;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .7rem;
+    font-weight: bold;
+}
+
+.sub-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding: 0 4px;
+}
+
+.sub-header-left { display: flex; align-items: center; gap: 12px; }
+
+.category-select {
+    background: var(--bg-card);
+    color: var(--text-main);
+    border: 1px solid var(--border-hover);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: .85rem;
+    outline: none;
+    cursor: pointer;
+}
+
+.collapse-btn {
+    background: var(--bg-card);
+    color: var(--text-main);
+    border: 1px solid var(--border-hover);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: .85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.collapse-btn:hover { background: var(--bg-input); }
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+@media (min-width: 768px) {
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 16px;
+    }
+}
+
+.product-card {
+    background: var(--bg-card);
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform .2s;
+    position: relative;
+}
+
+.product-card:hover { border-color: var(--border-hover); }
+
+.admin-card-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 5;
+    display: none;
+    gap: 6px;
+}
+
+.admin-card-actions.show { display: flex; }
+
+.admin-card-actions button {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-size: .9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: .2s;
+}
+
+.btn-edit { background: var(--blue); color: #fff; }
+.btn-edit:hover { background: var(--blue-hover); transform: scale(1.1); }
+.btn-delete { background: var(--danger); color: #fff; }
+.btn-delete:hover { background: #dc2626; transform: scale(1.1); }
+
+.card-image {
+    background: #0d1117;
+    padding: 20px 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    min-height: 120px;
+    overflow: hidden;
+}
+
+.card-image img {
+    max-width: 100%;
+    max-height: 150px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #78350f;
+    color: var(--orange);
+    font-size: .55rem;
+    font-weight: bold;
+    padding: 3px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    z-index: 2;
+}
+
+.freefire-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #ff6b00, #ff0055);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    box-shadow: 0 0 20px rgba(255, 107, 0, .4);
+    transform: rotate(-5deg);
+}
+
+.card-content {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.card-category {
+    color: var(--blue);
+    font-size: .65rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.card-title {
+    color: var(--text-white);
+    font-size: .85rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+
+.card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.card-meta span { color: var(--text-muted); font-size: .7rem; }
+
+.card-bottom { margin-top: auto; }
+
+.card-price {
+    color: var(--green);
+    font-size: .9rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.card-stock {
+    color: var(--text-muted);
+    font-size: .7rem;
+    margin-bottom: 10px;
+}
+
+.card-btn {
+    width: 100%;
+    padding: 8px;
+    background: var(--bg-input);
+    color: #e5e7eb;
+    border: 1px solid #374151;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: .75rem;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    transition: .2s;
+}
+
+.card-btn:hover { background: #374151; color: var(--text-white); }
+.card-btn.download { background: var(--blue-hover); color: #fff; border-color: var(--blue-hover); }
+.card-btn.download:hover { background: var(--blue); }
+
+.cart-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .7);
+    display: none;
+    justify-content: flex-end;
+    z-index: 1000;
+}
+
+.cart-overlay.open { display: flex; }
+
+.cart-panel {
+    background: var(--bg-card);
+    width: 100%;
+    max-width: 400px;
+    height: 100%;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    border-left: 1px solid var(--border-color);
+}
+
+.cart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.cart-header h2 { font-size: 1.2rem; color: var(--text-white); }
+
+.close-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.8rem;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.close-btn:hover { color: var(--text-white); }
+
+.cart-items { flex: 1; }
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.cart-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cart-item-name {
+    font-weight: bold;
+    color: var(--text-white);
+    font-size: .9rem;
+}
+
+.cart-item-price { color: var(--text-muted); font-size: .8rem; }
+
+.cart-item-qty { display: flex; align-items: center; gap: 8px; }
+
+.qty-btn {
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--border-hover);
+    background: var(--bg-input);
+    color: var(--text-main);
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.qty-btn:hover { background: #374151; }
+
+.remove-btn {
+    background: none;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 1.1rem;
+    margin-left: 4px;
+}
+
+.cart-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.1rem;
+    font-weight: bold;
+    padding: 16px 0;
+    border-top: 2px solid var(--border-color);
+    margin-top: 12px;
+    color: var(--text-white);
+}
+
+.checkout-btn {
+    background: var(--blue-hover);
+    color: #fff;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.checkout-btn:hover { background: var(--blue); }
+
+.empty-cart {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 40px 0;
+    font-size: .9rem;
+}
+
+.admin-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    padding: 16px;
+}
+
+.admin-overlay.open { display: flex; }
+
+.admin-panel {
+    background: var(--bg-card);
+    width: 100%;
+    max-width: 550px;
+    max-height: 90vh;
+    border-radius: 16px;
+    border: 1px solid var(--purple);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.admin-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, rgba(168, 85, 247, .15), transparent);
+}
+
+.admin-header h2 {
+    color: var(--purple);
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-body {
+    padding: 20px 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.admin-section-title {
+    font-size: .85rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.form-group { margin-bottom: 14px; }
+
+.form-group label {
+    display: block;
+    font-size: .75rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px 12px;
+    background: #0d1117;
+    border: 1px solid var(--border-hover);
+    border-radius: 8px;
+    color: var(--text-white);
+    font-size: .9rem;
+    outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus { border-color: var(--purple); }
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    background: var(--purple);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: .9rem;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.btn-primary:hover { background: #9333ea; }
+
+.image-upload-area {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.image-preview {
+    width: 100px;
+    height: 100px;
+    background: #0d1117;
+    border: 2px dashed var(--border-hover);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-preview .placeholder {
+    font-size: 2rem;
+    color: var(--text-muted);
+}
+
+.image-upload-controls {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.image-upload-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 14px;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: .85rem;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.image-upload-btn:hover { background: var(--blue-hover); }
+
+.image-remove-btn {
+    padding: 8px 14px;
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid var(--danger);
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: .8rem;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.image-remove-btn:hover { background: var(--danger); color: #fff; }
+
+.image-hint {
+    font-size: .7rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+input[type="file"] { display: none; }
+
+.admin-product-list {
+    margin-top: 20px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 16px;
+}
+
+.admin-product-list h3 {
+    font-size: .85rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.admin-product-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: #0d1117;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.admin-product-item .thumb {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    object-fit: cover;
+    margin-right: 10px;
+    background: #1f2937;
+    flex-shrink: 0;
+}
+
+.admin-product-item .info {
+    font-size: .8rem;
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.admin-product-item .info strong {
+    color: var(--text-white);
+    display: block;
+}
+
+.admin-product-item .info span {
+    color: var(--text-muted);
+    font-size: .7rem;
+    display: block;
+}
+
+.admin-product-item .actions {
+    display: flex;
+    gap: 6px;
+}
+
+.admin-product-item .actions button {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: .85rem;
+}
+
+.logout-btn {
+    background: var(--danger);
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: .8rem;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.logout-btn:hover { background: #dc2626; }
+
+.export-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--green);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: .9rem;
+    cursor: pointer;
+    margin-top: 12px;
+}
+
+.export-btn:hover { background: #00cc6a; }
+
+.support-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    z-index: 9999;
+}
+
+.support-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all .3s ease;
+}
+
+.support-options.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.support-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 25px;
+    text-decoration: none;
+    color: #fff;
+    font-weight: bold;
+    font-size: .85rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, .4);
+    transition: transform .2s;
+    min-width: 120px;
+}
+
+.support-btn:hover { transform: scale(1.05); }
+
+.zalo-btn { background: #0068FF; }
+.zalo-btn:hover { background: #0055cc; }
+
+.support-toggle {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    background: var(--blue-hover);
+    color: #fff;
+    border: none;
+    font-size: 1.6rem;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(37, 99, 235, .5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .3s ease;
+}
+
+.support-toggle:hover {
+    background: var(--blue);
+    transform: scale(1.1);
+}
+
+.support-toggle.active {
+    transform: rotate(45deg);
+    background: #1e40af;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .welcome-box { padding: 30px 20px; }
+    .welcome-logo, .welcome-logo-wrap { width: 68px; height: 68px; }
+    .welcome-logo { font-size: 1.9rem; }
+    .welcome-title { font-size: 1.25rem; }
+    .puller { width: 36px; height: 62px; }
+    .stick-svg { width: 36px; height: 62px; }
+    .rope-segment { flex: 0 0 14px; height: 5px; }
+    .choice-btn { padding: 10px 10px; gap: 8px; }
+    .btn-icon-wrap { width: 32px; height: 32px; }
+    .btn-icon { font-size: 1rem; }
+    .btn-label { font-size: 0.75rem; }
+    .btn-desc { display: none; }
+    .orb-1, .orb-2, .orb-3 { filter: blur(60px); }
+    .fall-person { width: 45px; height: 75px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ================= WELCOME SCREEN ================= -->
+<div class="welcome-overlay" id="welcomeOverlay">
+    <div class="bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- 5 nhân vật rơi xuống -->
+    <div class="falling-intro" id="fallingIntro">
+        <div class="fall-person">
+            <svg viewBox="0 0 50 78" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="25" cy="13" r="8.5" fill="none" stroke="currentColor" stroke-width="2.8"/>
+                <circle cx="22" cy="12" r="1.2" fill="currentColor"/>
+                <circle cx="28" cy="12" r="1.2" fill="currentColor"/>
+                <path d="M 22 17 Q 25 19 28 17" stroke="currentColor" stroke-width="1.4" fill="none"/>
+                <line x1="25" y1="21" x2="25" y2="26" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="25" y1="26" x2="25" y2="50" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="25" y1="30" x2="10" y2="22" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="25" y1="30" x2="40" y2="22" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="25" y1="50" x2="12" y2="74" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="25" y1="50" x2="38" y2="74" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="12" y1="74" x2="8" y2="76" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="38" y1="74" x2="42" y2="76" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <div class="fall-person">
+            <svg viewBox="0 0 50 78" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="25" cy="13" r="8.5" fill="none" stroke="currentColor" stroke-width="2.8"/>
+                <circle cx="22" cy="12" r="1.2" fill="currentColor"/>
+                <circle cx="28" cy="12" r="1.2" fill="currentColor"/>
+                <path d="M 22 17 Q 25 19 28 17" stroke="currentColor" stroke-width="1.4" fill="none"/>
+                <line x1="25" y1="21" x2="25" y2="26" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="25" y1="26" x2="25" y2="50" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="25" y1="30" x2="10" y2="22" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="25" y1="30" x2="40" y2="22" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="25" y1="50" x2="12" y2="74" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="25" y1="50" x2="38" y2="74" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="12" y1="74" x2="8" y2="76" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="38" y1="74" x2="42" y2="76" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <div class="fall-person">
+            <svg viewBox="0 0 50 78" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="25" cy="13" r="8.5" fill="none" stroke="currentColor" stroke-width="2.8"/>
+                <circle cx="22" cy="12" r="1.2" fill="currentColor"/>
+                <circle cx="28" cy="12" r="1.2" fill="currentColor"/>
+                <path d="M 22 17 Q 25 19 28 17" stroke="currentColor" stroke-width="1.4" fill="none"/>
+                <line x1="25" y1="21" x2="25" y2="26" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="25" y1="26" x2="25" y2="50" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="25" y1="30" x2="10" y2="22" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="25" y1="30" x2="40" y2="22" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="25" y1="50" x2="12" y2="74" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="25" y1="50" x2="38" y2="74" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="12" y1="74" x2="8" y2="76" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="38" y1="74" x2="42" y2="76" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <div class="fall-person">
+            <svg viewBox="0 0 50 78" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="25" cy="13" r="8.5" fill="none" stroke="currentColor" stroke-width="2.8"/>
+                <circle cx="22" cy="12" r="1.2" fill="currentColor"/>
+                <circle cx="28" cy="12" r="1.2" fill="currentColor"/>
+                <path d="M 22 17 Q 25 19 28 17" stroke="currentColor" stroke-width="1.4" fill="none"/>
+                <line x1="25" y1="21" x2="25" y2="26" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="25" y1="26" x2="25" y2="50" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="25" y1="30" x2="10" y2="22" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="25" y1="30" x2="40" y2="22" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="25" y1="50" x2="12" y2="74" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="25" y1="50" x2="38" y2="74" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="12" y1="74" x2="8" y2="76" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="38" y1="74" x2="42" y2="76" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <div class="fall-person">
+            <svg viewBox="0 0 50 78" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="25" cy="13" r="8.5" fill="none" stroke="currentColor" stroke-width="2.8"/>
+                <circle cx="22" cy="12" r="1.2" fill="currentColor"/>
+                <circle cx="28" cy="12" r="1.2" fill="currentColor"/>
+                <path d="M 22 17 Q 25 19 28 17" stroke="currentColor" stroke-width="1.4" fill="none"/>
+                <line x1="25" y1="21" x2="25" y2="26" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="25" y1="26" x2="25" y2="50" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="25" y1="30" x2="10" y2="22" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="25" y1="30" x2="40" y2="22" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="25" y1="50" x2="12" y2="74" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="25" y1="50" x2="38" y2="74" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="12" y1="74" x2="8" y2="76" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                <line x1="38" y1="74" x2="42" y2="76" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Welcome box -->
+    <div class="welcome-box" id="welcomeBox">
+        <div class="welcome-logo-wrap">
+            <div class="welcome-logo-glow"></div>
+            <div class="welcome-logo">⬡</div>
+        </div>
+
+        <h1 class="welcome-title">Cửa Hàng Tiện Ích</h1>
+        <p class="welcome-subtitle">Chọn chế độ truy cập để tiếp tục</p>
+
+        <div class="tug-scene" id="tugScene">
+            <div class="pull-line pull-line-1">
+                <div class="puller">
+                    <svg class="stick-svg" viewBox="0 0 50 78" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="22" cy="13" r="8.5" fill="none" stroke="currentColor" stroke-width="2.8"/>
+                        <circle cx="19" cy="12" r="1.1" fill="currentColor"/>
+                        <circle cx="25" cy="12" r="1.1" fill="currentColor"/>
+                        <path d="M 19 17 Q 22 18 25 17" stroke="currentColor" stroke-width="1.4" fill="none"/>
+                        <line x1="22" y1="21" x2="22" y2="26" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="22" y1="26" x2="22" y2="50" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="22" y1="30" x2="48" y2="26" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="22" y1="30" x2="12" y2="42" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="22" y1="50" x2="8" y2="74" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="22" y1="50" x2="36" y2="74" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="8" y1="74" x2="3" y2="76" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="36" y1="74" x2="41" y2="76" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                    </svg>
+                    <span class="sweat">💦</span>
+                </div>
+                <div class="rope-segment"></div>
+                <button class="choice-btn guest" id="guestBtn">
+                    <span class="btn-icon-wrap"><span class="btn-icon">👤</span></span>
+                    <span class="btn-text">
+                        <span class="btn-label">Vào với tư cách Khách</span>
+                        <span class="btn-desc">Xem và tải sản phẩm miễn phí</span>
+                    </span>
+                    <span class="btn-arrow">→</span>
+                </button>
+            </div>
+
+            <div class="pull-line pull-line-2">
+                <button class="choice-btn admin" id="adminChoiceBtn">
+                    <span class="btn-icon-wrap"><span class="btn-icon">👑</span></span>
+                    <span class="btn-text">
+                        <span class="btn-label">Đăng nhập Admin</span>
+                        <span class="btn-desc">Quản lý sản phẩm & hệ thống</span>
+                    </span>
+                    <span class="btn-arrow">→</span>
+                </button>
+                <div class="rope-segment"></div>
+                <div class="puller">
+                    <svg class="stick-svg" viewBox="0 0 50 78" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="28" cy="13" r="8.5" fill="none" stroke="currentColor" stroke-width="2.8"/>
+                        <circle cx="25" cy="12" r="1.1" fill="currentColor"/>
+                        <circle cx="31" cy="12" r="1.1" fill="currentColor"/>
+                        <path d="M 25 17 Q 28 18 31 17" stroke="currentColor" stroke-width="1.4" fill="none"/>
+                        <line x1="28" y1="21" x2="28" y2="26" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="28" y1="26" x2="28" y2="50" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="28" y1="30" x2="2" y2="26" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="28" y1="30" x2="38" y2="42" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="28" y1="50" x2="14" y2="74" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="28" y1="50" x2="42" y2="74" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="14" y1="74" x2="9" y2="76" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="42" y1="74" x2="47" y2="76" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                    </svg>
+                    <span class="sweat">💦</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-pwd-form" id="adminPwdForm">
+            <div class="pwd-header">
+                <div class="pwd-icon">🔐</div>
+                <div class="pwd-title">Xác thực Admin</div>
+                <div class="pwd-subtitle">Nhập mật khẩu để tiếp tục</div>
+            </div>
+            <div class="password-input-wrapper">
+                <span class="lock-icon">🔒</span>
+                <input type="password" id="passwordInput" class="password-input" placeholder="Nhập mật khẩu..." autocomplete="off">
+                <span class="eye-icon" id="togglePassword">👁️</span>
+            </div>
+            <div class="password-error" id="passwordError">
+                <span>⚠️</span> Mật khẩu không đúng!
+            </div>
+            <button class="password-submit" id="passwordSubmit">
+                <span>Xác nhận</span>
+                <span class="submit-arrow">→</span>
+            </button>
+            <button class="back-btn" id="backBtn">
+                <span>←</span> Quay lại
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ================= SHOP ================= -->
+<div id="shopSection" class="shop-container">
+<div class="top-header">
+<div class="header-left">
+<div class="logo-icon">⬡</div>
+<div class="brand-info"><p>Cửa hàng tiện ích</p></div>
+<span class="product-count-badge" id="productCountBadge">0 sản phẩm</span>
+<span class="admin-badge" id="adminBadge">👑 ADMIN</span>
+</div>
+<div class="header-right">
+<button class="admin-btn" id="adminPanelBtn">⚙️ Quản Trị</button>
+<button class="header-logout-btn" id="headerLogoutBtn">🚪 Đăng Xuất</button>
+<button class="cart-btn" id="openCart">🛍️ <span class="cart-count" id="cartCount">0</span></button>
+</div>
+</div>
+
+<div class="sub-header">
+<div class="sub-header-left">
+<select class="category-select" id="categoryFilter">
+<option value="all">Tất cả</option>
+<option value="GAME">GAME</option>
+<option value="AIMLOCK">AIMLOCK</option>
+<option value="TỐI ƯU">TỐI ƯU</option>
+</select>
+</div>
+<button class="collapse-btn">Thu gọn ▸</button>
+</div>
+
+<main><div class="product-grid" id="productGrid"></div></main>
+
+<div class="cart-overlay" id="cartOverlay">
+<div class="cart-panel">
+<div class="cart-header"><h2>Giỏ hàng</h2><button class="close-btn" id="closeCart">&times;</button></div>
+<div class="cart-items" id="cartItems"></div>
+<div class="cart-total"><span>Tổng cộng:</span><span id="cartTotal">0 ₫</span></div>
+<button class="checkout-btn" id="checkoutBtn">Thanh toán</button>
+</div>
+</div>
+</div>
+
+<!-- ================= ADMIN PANEL ================= -->
+<div class="admin-overlay" id="adminOverlay">
+<div class="admin-panel">
+<div class="admin-header"><h2>👑 Bảng Quản Trị</h2><button class="close-btn" id="closeAdmin">&times;</button></div>
+<div class="admin-body">
+<h3 class="admin-section-title">➕ Thêm / Sửa Sản Phẩm</h3>
+<input type="hidden" id="editId">
+<div class="form-row">
+<div class="form-group"><label>Tên sản phẩm</label><input type="text" id="pName" placeholder="VD: Aimlock Pro"></div>
+<div class="form-group"><label>Danh mục</label>
+<select id="pCategory"><option value="GAME">GAME</option><option value="AIMLOCK">AIMLOCK</option><option value="TỐI ƯU">TỐI ƯU</option></select>
+</div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>Thời hạn</label><input type="text" id="pDuration" value="MỚI NHẤT"></div>
+<div class="form-group"><label>Giá (VNĐ)</label><input type="number" id="pPrice" value="0"></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>Badge</label><input type="text" id="pBadge" placeholder="HOT / MỚI"></div>
+<div class="form-group"><label>Icon (nếu không có ảnh)</label>
+<select id="pImg"><option value="file">📁 File</option><option value="aim">🎯 Aim</option><option value="freefire">🔥 Free Fire</option></select>
+</div>
+</div>
+<div class="form-group">
+<label>📷 Ảnh sản phẩm (tùy chọn)</label>
+<div class="image-upload-area">
+<div class="image-preview" id="imagePreview">
+<span class="placeholder">🖼️</span>
+</div>
+<div class="image-upload-controls">
+<button type="button" class="image-upload-btn" id="pickImageBtn">📷 Chọn Ảnh Từ Máy</button>
+<button type="button" class="image-remove-btn" id="removeImageBtn" style="display:none">🗑️ Xóa Ảnh</button>
+<input type="file" id="imageInput" accept="image/*">
+<div class="image-hint">Ảnh lưu dạng Base64. Tối đa 20MB.<br>Khuyến nghị &lt; 2MB để trang nhanh.</div>
+</div>
+</div>
+</div>
+<div class="form-group"><label>Link tải</label><input type="text" id="pLink" placeholder="https://..."></div>
+<div class="form-group"><label>Nút hiển thị</label><input type="text" id="pLinkText" value="Tải Xuống"></div>
+<button class="btn-primary" id="saveProduct">💾 Lưu Sản Phẩm</button>
+<button class="export-btn" id="exportCodeBtn">📥 Xuất Code HTML (Lưu Vào Code)</button>
+
+<div class="admin-product-list">
+<h3>📋 Danh sách sản phẩm (<span id="adminProductCount">0</span>)</h3>
+<div id="adminProductList"></div>
+</div>
+<button class="logout-btn" id="logoutBtn">🔓 Đăng Xuất Admin</button>
+</div>
+</div>
+</div>
+
+<!-- ================= SUPPORT ================= -->
+<div class="support-widget">
+<div class="support-options" id="supportOptions">
+<a href="https://zalo.me/0907415055" target="_blank" class="support-btn zalo-btn"><span>💬</span> Zalo</a>
+</div>
+<button class="support-toggle" id="supportToggle">💬</button>
+</div>
+
+<script>
+// ==================== ADMIN PASSWORD ====================
+const PWD_ADMIN = "nhan";
+
+const welcomeOverlay = document.getElementById('welcomeOverlay');
+const welcomeBox = document.getElementById('welcomeBox');
+const fallingIntro = document.getElementById('fallingIntro');
+const tugScene = document.getElementById('tugScene');
+const adminPwdForm = document.getElementById('adminPwdForm');
+const passwordInput = document.getElementById('passwordInput');
+const passwordSubmit = document.getElementById('passwordSubmit');
+const passwordError = document.getElementById('passwordError');
+const togglePassword = document.getElementById('togglePassword');
+const headerLogoutBtn = document.getElementById('headerLogoutBtn');
+
+let isAdmin = false;
+let isLoggingIn = false; // Cờ chống double-click
+
+const savedRole = localStorage.getItem('shopRole');
+if (savedRole === 'admin') {
+    isAdmin = true;
+    welcomeOverlay.classList.add('hidden');
+    applyRole();
+} else if (savedRole === 'user') {
+    welcomeOverlay.classList.add('hidden');
+    applyRole();
+}
+
+// ==================== INTRO: XÓA 5 NGƯỜI SAU KHI RƠI XONG ====================
+setTimeout(() => {
+    if (fallingIntro) fallingIntro.style.display = 'none';
+}, 2800);
+
+// ==================== HÀM ĐĂNG NHẬP VỚI HIỆU ỨNG TRÁI BÓNG ====================
+function loginAs(role) {
+    if (isLoggingIn) return;
+    isLoggingIn = true;
+
+    // Ẩn 5 người rơi ngay lập tức nếu còn
+    if (fallingIntro) fallingIntro.style.display = 'none';
+
+    // Set role trước để data hiển thị đúng
+    isAdmin = (role === 'admin');
+    localStorage.setItem('shopRole', role);
+    applyRole();
+    renderProducts();
+    renderCart();
+
+    // Chạy hiệu ứng biến thành trái bóng
+    welcomeBox.classList.add('ball-mode');
+
+    // Đợi animation xong thì ẩn overlay
+    setTimeout(() => {
+        welcomeOverlay.classList.add('hidden');
+        // Reset sau khi overlay đã ẩn hoàn toàn
+        setTimeout(() => {
+            welcomeBox.classList.remove('ball-mode');
+            isLoggingIn = false;
+        }, 700);
+    }, 1500);
+}
+
+// ==================== WELCOME SCREEN LOGIC ====================
+document.getElementById('guestBtn').addEventListener('click', () => {
+    loginAs('user');
+});
+
+document.getElementById('adminChoiceBtn').addEventListener('click', () => {
+    tugScene.classList.add('hidden');
+    adminPwdForm.classList.add('show');
+    passwordInput.focus();
+});
+
+document.getElementById('backBtn').addEventListener('click', () => {
+    adminPwdForm.classList.remove('show');
+    tugScene.classList.remove('hidden');
+    passwordInput.value = '';
+    passwordError.classList.remove('show');
+});
+
+function checkPassword() {
+    const val = passwordInput.value.trim();
+    if (val === PWD_ADMIN) {
+        loginAs('admin');
+    } else {
+        passwordError.classList.add('show');
+        passwordInput.value = '';
+        passwordInput.focus();
+        passwordError.style.animation = 'none';
+        void passwordError.offsetHeight;
+        passwordError.style.animation = 'shake .4s';
+    }
+}
+
+passwordInput.addEventListener('input', () => { passwordError.classList.remove('show'); });
+passwordSubmit.addEventListener('click', checkPassword);
+passwordInput.addEventListener('keypress', e => { if (e.key === 'Enter') checkPassword(); });
+togglePassword.addEventListener('click', () => {
+    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordInput.setAttribute('type', type);
+    togglePassword.textContent = type === 'password' ? '👁️' : '🙈';
+});
+
+// ==================== ROLE MANAGEMENT ====================
+function applyRole() {
+    const adminBtn = document.getElementById('adminPanelBtn');
+    const adminBadge = document.getElementById('adminBadge');
+    const adminActions = document.querySelectorAll('.admin-card-actions');
+    const loggedIn = localStorage.getItem('shopRole') !== null;
+    if (isAdmin) {
+        adminBtn.classList.add('show');
+        adminBadge.classList.add('show');
+        adminActions.forEach(el => el.classList.add('show'));
+    } else {
+        adminBtn.classList.remove('show');
+        adminBadge.classList.remove('show');
+        adminActions.forEach(el => el.classList.remove('show'));
+    }
+    if (loggedIn) headerLogoutBtn.classList.add('show');
+    else headerLogoutBtn.classList.remove('show');
+}
+
+// ==================== LOGOUT ====================
+function headerLogout() {
+    if (!confirm('Bạn có chắc muốn đăng xuất không?')) return;
+    localStorage.removeItem('shopRole');
+    isAdmin = false;
+    applyRole();
+    adminOverlay.classList.remove('open');
+
+    // Reset welcome box về trạng thái ban đầu
+    welcomeBox.classList.remove('ball-mode');
+    welcomeBox.style.animation = 'none';
+    void welcomeBox.offsetHeight; // trigger reflow
+    welcomeBox.style.animation = 'welcomeFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+
+    // Hiện overlay
+    welcomeOverlay.classList.remove('hidden');
+    tugScene.classList.remove('hidden');
+    adminPwdForm.classList.remove('show');
+    passwordInput.value = '';
+
+    renderProducts();
+
+    // Reset intro 5 người rơi
+    if (fallingIntro) {
+        fallingIntro.style.display = 'block';
+        setTimeout(() => {
+            fallingIntro.style.display = 'none';
+        }, 2800);
+    }
+}
+headerLogoutBtn.addEventListener('click', headerLogout);
+
+// ==================== PRODUCTS DATA ====================
+const DEFAULT_PRODUCTS = [
+    { id: 1, category: 'GAME', name: 'Định vị moco', duration: 'VĨNH VIỄN', sold: 99, price: 0, stock: 999, badge: 'HOT', img: 'freefire', image: '', downloadLink: 'https://www.mediafire.com/file/rbh9kfdmzz9wnh4/Dragon_Injector_V2.apk/file', downloadText: 'Tải APK' },
+    { id: 8, category: 'AIMLOCK', name: 'File Aimlock 💝', duration: 'MỚI NHẤT', sold: 300, price: 0, stock: 999, badge: 'HOT', img: 'aim', image: '', downloadLink: 'https://link4m.com/V6Jii8', downloadText: 'Tải Xuống' },
+    { id: 21, category: 'TỐI ƯU', name: 'Game Turbo X Pro 4.5', duration: 'MỚI NHẤT', sold: 99, price: 0, stock: 999, badge: 'MỚI', img: 'file', image: '', downloadLink: 'https://fnote.net/notes/7Ha4kJ', downloadText: 'Tải Xuống' },
+    { id: 22, category: 'TỐI ƯU', name: 'Nebula Touch Premium', duration: 'V1.0.9 BETA', sold: 45, price: 0, stock: 999, badge: 'HOT', img: 'aim', image: '', downloadLink: 'https://www.mediafire.com/file/tzp1g3kxn694er1/Nebula+Touch+v1.0.9+Beta_crack.apk/file', downloadText: 'Tải APK' },
+    { id: 23, category: 'AIMLOCK', name: 'Aimlock Mode', duration: 'MỚI NHẤT', sold: 0, price: 0, stock: 999, badge: 'MỚI', img: 'aim', image: '', downloadLink: 'https://www.mediafire.com/file/drcdhofk7fc7s0u/', downloadText: 'Tải Xuống' },
+    { id: 24, category: 'AIMLOCK', name: 'Aimlock Plus', duration: 'MỚI NHẤT', sold: 0, price: 0, stock: 999, badge: 'MỚI', img: 'aim', image: '', downloadLink: 'https://www.mediafire.com/file/ofymzx6bv4a39t4/AIMLOCK+H%E1%BB%96+TR%E1%BB%A2+FULL+%C4%90%E1%BB%8E+!!!!%F0%9F%AA%BD.zip/file', downloadText: 'Tải Xuống' },
+    { id: 25, category: 'AIMLOCK', name: 'AIMLOCK FULLRED', duration: 'MỚI NHẤT', sold: 0, price: 0, stock: 999, badge: 'MỚI', img: 'aim', image: '', downloadLink: 'https://www.mediafire.com/file/0h152k2zfdukhkd/AIMLOCK+FULLRED.zip/file?dkey=g63ydm99lav&r=994&zarsrc=1303', downloadText: 'Tải Xuống' },
+    { id: 26, category: 'AIMLOCK', name: 'Aim Head + Fix Rung', duration: 'MỚI NHẤT', sold: 0, price: 0, stock: 999, badge: 'MỚI', img: 'aim', image: '', downloadLink: 'https://link4m.org/go/aDPGEeJ', downloadText: 'Tải Xuống' }
+];
+
+let products = JSON.parse(localStorage.getItem('shopProducts')) || DEFAULT_PRODUCTS;
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+let currentFilter = 'all';
+let currentImageBase64 = '';
+
+const saveProducts = () => localStorage.setItem('shopProducts', JSON.stringify(products));
+const saveCart = () => localStorage.setItem('cart', JSON.stringify(cart));
+
+// ==================== DOM ELEMENTS ====================
+const productGrid = document.getElementById('productGrid');
+const productCountBadge = document.getElementById('productCountBadge');
+const cartOverlay = document.getElementById('cartOverlay');
+const cartItemsEl = document.getElementById('cartItems');
+const cartCountEl = document.getElementById('cartCount');
+const cartTotalEl = document.getElementById('cartTotal');
+const categoryFilter = document.getElementById('categoryFilter');
+const supportToggle = document.getElementById('supportToggle');
+const supportOptions = document.getElementById('supportOptions');
+const adminOverlay = document.getElementById('adminOverlay');
+const adminPanelBtn = document.getElementById('adminPanelBtn');
+const adminProductList = document.getElementById('adminProductList');
+const adminProductCount = document.getElementById('adminProductCount');
+const imageInput = document.getElementById('imageInput');
+const imagePreview = document.getElementById('imagePreview');
+const pickImageBtn = document.getElementById('pickImageBtn');
+const removeImageBtn = document.getElementById('removeImageBtn');
+
+// ==================== HELPERS ====================
+const createEl = (tag, className = '', text = '') => {
+    const el = document.createElement(tag);
+    if (className) el.className = className;
+    if (text) el.textContent = text;
+    return el;
+};
+const formatPrice = price => price === 0 ? 'Miễn phí' : Number(price).toLocaleString('vi-VN') + ' ₫';
+
+// ==================== IMAGE UPLOAD ====================
+function setImagePreview(base64) {
+    currentImageBase64 = base64 || '';
+    imagePreview.innerHTML = '';
+    if (currentImageBase64) {
+        const img = document.createElement('img');
+        img.src = currentImageBase64;
+        img.alt = 'Preview';
+        imagePreview.appendChild(img);
+        removeImageBtn.style.display = 'inline-flex';
+    } else {
+        const ph = createEl('span', 'placeholder', '🖼️');
+        imagePreview.appendChild(ph);
+        removeImageBtn.style.display = 'none';
+    }
+}
+
+pickImageBtn.addEventListener('click', () => imageInput.click());
+
+imageInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) return alert('Vui lòng chọn file ảnh!');
+    if (file.size > 20 * 1024 * 1024) return alert('❌ Ảnh quá lớn! Vui lòng chọn ảnh dưới 20MB.');
+    if (file.size > 2 * 1024 * 1024) {
+        const sizeMB = (file.size / 1024 / 1024).toFixed(1);
+        const ok = confirm('⚠️ Ảnh của bạn khá lớn (' + sizeMB + 'MB).\n\nViệc dùng ảnh lớn có thể làm trang chậm, tràn bộ nhớ.\n\nBạn có muốn tiếp tục không?\n(Khuyến nghị: ảnh < 2MB)');
+        if (!ok) { imageInput.value = ''; return; }
+    }
+    const reader = new FileReader();
+    reader.onload = ev => setImagePreview(ev.target.result);
+    reader.readAsDataURL(file);
+    imageInput.value = '';
+});
+
+removeImageBtn.addEventListener('click', () => setImagePreview(''));
+
+// ==================== RENDER PRODUCTS ====================
+function renderProducts() {
+    productCountBadge.textContent = products.length + ' sản phẩm';
+    productGrid.innerHTML = '';
+    const filtered = currentFilter === 'all' ? products : products.filter(p => p.category === currentFilter);
+    const fragment = document.createDocumentFragment();
+    filtered.forEach(p => {
+        const card = createEl('div', 'product-card');
+        if (isAdmin) {
+            const actions = createEl('div', 'admin-card-actions show');
+            const editBtn = createEl('button', 'btn-edit', '✏️');
+            editBtn.onclick = () => openEditForm(p.id);
+            const delBtn = createEl('button', 'btn-delete', '🗑️');
+            delBtn.onclick = () => deleteProduct(p.id);
+            actions.append(editBtn, delBtn);
+            card.appendChild(actions);
+        }
+        const imgDiv = createEl('div', 'card-image');
+        if (p.badge) imgDiv.appendChild(createEl('span', 'badge', p.badge));
+        if (p.image) {
+            const img = document.createElement('img');
+            img.src = p.image;
+            img.alt = p.name;
+            imgDiv.appendChild(img);
+        } else {
+            const iconDiv = createEl('div');
+            if (p.img === 'freefire') { iconDiv.className = 'freefire-icon'; iconDiv.textContent = '🔥'; }
+            else if (p.img === 'aim') { iconDiv.style.fontSize = '2.5rem'; iconDiv.textContent = '🎯'; }
+            else { iconDiv.style.fontSize = '2.5rem'; iconDiv.textContent = '📁'; }
+            imgDiv.appendChild(iconDiv);
+        }
+        const contentDiv = createEl('div', 'card-content');
+        contentDiv.appendChild(createEl('div', 'card-category', p.category));
+        contentDiv.appendChild(createEl('div', 'card-title', p.name));
+        const metaDiv = createEl('div', 'card-meta');
+        metaDiv.appendChild(createEl('span', '', p.duration));
+        metaDiv.appendChild(createEl('span', '', p.sold + ' đã bán'));
+        contentDiv.appendChild(metaDiv);
+        const bottomDiv = createEl('div', 'card-bottom');
+        bottomDiv.appendChild(createEl('div', 'card-price', formatPrice(p.price)));
+        bottomDiv.appendChild(createEl('div', 'card-stock', 'Còn ' + p.stock + ' sản phẩm'));
+        let btn;
+        if (p.downloadLink) {
+            btn = createEl('a', 'card-btn download', p.downloadText || 'Tải xuống');
+            btn.href = p.downloadLink;
+            btn.target = '_blank';
+        } else {
+            btn = createEl('button', 'card-btn', 'Thêm vào giỏ');
+            btn.dataset.id = p.id;
+        }
+        bottomDiv.appendChild(btn);
+        contentDiv.appendChild(bottomDiv);
+        card.appendChild(imgDiv);
+        card.appendChild(contentDiv);
+        fragment.appendChild(card);
+    });
+    productGrid.appendChild(fragment);
+}
+
+// ==================== RENDER CART ====================
+function renderCart() {
+    const totalItems = cart.reduce((s, i) => s + i.qty, 0);
+    cartCountEl.textContent = totalItems;
+    cartItemsEl.innerHTML = '';
+    if (cart.length === 0) {
+        cartItemsEl.appendChild(createEl('div', 'empty-cart', 'Giỏ hàng trống'));
+        cartTotalEl.textContent = formatPrice(0);
+        return;
+    }
+    const fragment = document.createDocumentFragment();
+    let totalPrice = 0;
+    cart.forEach(item => {
+        totalPrice += item.price * item.qty;
+        const itemDiv = createEl('div', 'cart-item');
+        const infoDiv = createEl('div', 'cart-item-info');
+        infoDiv.appendChild(createEl('span', 'cart-item-name', item.name));
+        infoDiv.appendChild(createEl('span', 'cart-item-price', formatPrice(item.price)));
+        const qtyDiv = createEl('div', 'cart-item-qty');
+        const decBtn = createEl('button', 'qty-btn', '−');
+        decBtn.dataset.id = item.id;
+        decBtn.dataset.action = 'decrease';
+        const qtySpan = createEl('span', '', item.qty);
+        const incBtn = createEl('button', 'qty-btn', '+');
+        incBtn.dataset.id = item.id;
+        incBtn.dataset.action = 'increase';
+        const remBtn = createEl('button', 'remove-btn', '🗑️');
+        remBtn.dataset.id = item.id;
+        remBtn.dataset.action = 'remove';
+        qtyDiv.append(decBtn, qtySpan, incBtn, remBtn);
+        itemDiv.append(infoDiv, qtyDiv);
+        fragment.appendChild(itemDiv);
+    });
+    cartItemsEl.appendChild(fragment);
+    cartTotalEl.textContent = formatPrice(totalPrice);
+}
+
+// ==================== RENDER ADMIN LIST ====================
+function renderAdminList() {
+    adminProductCount.textContent = products.length;
+    adminProductList.innerHTML = '';
+    products.forEach(p => {
+        const item = createEl('div', 'admin-product-item');
+        const info = createEl('div', 'info');
+        if (p.image) {
+            const thumb = document.createElement('img');
+            thumb.className = 'thumb';
+            thumb.src = p.image;
+            info.appendChild(thumb);
+        }
+        const textDiv = document.createElement('div');
+        textDiv.innerHTML = '<strong>' + p.name + '</strong><span>' + p.category + ' • ' + p.duration + '</span>';
+        info.appendChild(textDiv);
+        const actions = createEl('div', 'actions');
+        const editBtn = createEl('button', 'btn-edit', '✏️');
+        editBtn.onclick = () => openEditForm(p.id);
+        const delBtn = createEl('button', 'btn-delete', '🗑️');
+        delBtn.onclick = () => deleteProduct(p.id);
+        actions.append(editBtn, delBtn);
+        item.append(info, actions);
+        adminProductList.appendChild(item);
+    });
+}
+
+// ==================== CART LOGIC ====================
+function addToCart(id) {
+    const product = products.find(p => p.id === id);
+    if (!product) return;
+    const existing = cart.find(item => item.id === id);
+    if (existing) existing.qty++;
+    else cart.push({ id: product.id, name: product.name, price: product.price, qty: 1 });
+    saveCart();
+    renderCart();
+    openCart();
+}
+
+function changeQty(id, action) {
+    const index = cart.findIndex(item => item.id === id);
+    if (index === -1) return;
+    if (action === 'increase') cart[index].qty++;
+    else if (action === 'decrease') { cart[index].qty--; if (cart[index].qty <= 0) cart.splice(index, 1); }
+    else if (action === 'remove') cart.splice(index, 1);
+    saveCart();
+    renderCart();
+}
+
+function openCart() { cartOverlay.classList.add('open'); }
+function closeCart() { cartOverlay.classList.remove('open'); }
+
+function checkout() {
+    if (cart.length === 0) return alert('Giỏ hàng của bạn đang trống!');
+    const totalPrice = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    alert('Cảm ơn bạn đã mua hàng!\nTổng thanh toán: ' + formatPrice(totalPrice));
+    cart = [];
+    saveCart();
+    renderCart();
+    closeCart();
+}
+
+// ==================== ADMIN LOGIC ====================
+function openAdminPanel() {
+    renderAdminList();
+    adminOverlay.classList.add('open');
+}
+function closeAdminPanel() {
+    adminOverlay.classList.remove('open');
+    resetForm();
+}
+function resetForm() {
+    document.getElementById('editId').value = '';
+    document.getElementById('pName').value = '';
+    document.getElementById('pCategory').value = 'AIMLOCK';
+    document.getElementById('pDuration').value = 'MỚI NHẤT';
+    document.getElementById('pPrice').value = '0';
+    document.getElementById('pBadge').value = '';
+    document.getElementById('pImg').value = 'aim';
+    document.getElementById('pLink').value = '';
+    document.getElementById('pLinkText').value = 'Tải Xuống';
+    setImagePreview('');
+}
+function openEditForm(id) {
+    const p = products.find(x => x.id === id);
+    if (!p) return;
+    document.getElementById('editId').value = p.id;
+    document.getElementById('pName').value = p.name;
+    document.getElementById('pCategory').value = p.category;
+    document.getElementById('pDuration').value = p.duration;
+    document.getElementById('pPrice').value = p.price;
+    document.getElementById('pBadge').value = p.badge || '';
+    document.getElementById('pImg').value = p.img;
+    document.getElementById('pLink').value = p.downloadLink || '';
+    document.getElementById('pLinkText').value = p.downloadText || 'Tải Xuống';
+    setImagePreview(p.image || '');
+    adminOverlay.classList.add('open');
+}
+function saveProduct() {
+    const name = document.getElementById('pName').value.trim();
+    if (!name) return alert('Vui lòng nhập tên sản phẩm!');
+    const editId = document.getElementById('editId').value;
+    const data = {
+        name: name,
+        category: document.getElementById('pCategory').value,
+        duration: document.getElementById('pDuration').value.trim() || 'MỚI NHẤT',
+        price: Number(document.getElementById('pPrice').value) || 0,
+        badge: document.getElementById('pBadge').value.trim(),
+        img: document.getElementById('pImg').value,
+        image: currentImageBase64,
+        downloadLink: document.getElementById('pLink').value.trim(),
+        downloadText: document.getElementById('pLinkText').value.trim() || 'Tải Xuống'
+    };
+    if (editId) {
+        const idx = products.findIndex(p => p.id === Number(editId));
+        if (idx !== -1) products[idx] = { ...products[idx], ...data };
+        alert('✅ Đã cập nhật sản phẩm!');
+    } else {
+        const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+        products.push({ id: newId, sold: 0, stock: 999, ...data });
+        alert('✅ Đã thêm sản phẩm mới!');
+    }
+    saveProducts();
+    resetForm();
+    renderProducts();
+    renderAdminList();
+}
+function deleteProduct(id) {
+    if (!confirm('Bạn có chắc muốn xóa sản phẩm này?')) return;
+    products = products.filter(p => p.id !== id);
+    saveProducts();
+    renderProducts();
+    renderAdminList();
+}
+
+function logout() {
+    localStorage.removeItem('shopRole');
+    isAdmin = false;
+    applyRole();
+    adminOverlay.classList.remove('open');
+
+    welcomeBox.classList.remove('ball-mode');
+    welcomeBox.style.animation = 'none';
+    void welcomeBox.offsetHeight;
+    welcomeBox.style.animation = 'welcomeFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+
+    welcomeOverlay.classList.remove('hidden');
+    tugScene.classList.remove('hidden');
+    adminPwdForm.classList.remove('show');
+    passwordInput.value = '';
+    renderProducts();
+}
+
+// ==================== EXPORT CODE ====================
+function exportHTML() {
+    if (!confirm('📥 Xuất file HTML mới?\n\n• Sản phẩm + ảnh hiện tại sẽ được lưu vào code\n• Người vào sẽ chọn Khách hoặc Admin')) return;
+    try {
+        let currentHtml = document.documentElement.outerHTML;
+        currentHtml = currentHtml.split('<' + '/script>').join('<\\/script>');
+
+        const clean = (sel, cls) => {
+            const regex = new RegExp('class="([^"]*)' + cls + '([^"]*)"', 'g');
+            currentHtml = currentHtml.replace(regex, 'class="$1$2"');
+        };
+        clean('#cartOverlay', 'open');
+        clean('#adminOverlay', 'open');
+        clean('#welcomeOverlay', 'hidden');
+        clean('#tugScene', 'hidden');
+        clean('#welcomeBox', 'ball-mode');
+        clean('.admin-card-actions', 'show');
+        clean('.admin-badge', 'show');
+        clean('.admin-btn', 'show');
+        clean('.header-logout-btn', 'show');
+        clean('.support-options', 'show');
+        clean('.support-toggle', 'active');
+        clean('#adminPwdForm', 'show');
+
+        currentHtml = currentHtml.replace(/<div class="product-grid" id="productGrid">[\s\S]*?<\/div>/, '<div class="product-grid" id="productGrid"></div>');
+        currentHtml = currentHtml.replace(/<div class="cart-items" id="cartItems">[\s\S]*?<\/div>/, '<div class="cart-items" id="cartItems"></div>');
+        currentHtml = currentHtml.replace(/<div id="adminProductList">[\s\S]*?<\/div>/, '<div id="adminProductList"></div>');
+        currentHtml = currentHtml.replace(/<div class="image-preview" id="imagePreview">[\s\S]*?<\/div>/, '<div class="image-preview" id="imagePreview"><span class="placeholder">🖼️</span></div>');
+        currentHtml = currentHtml.replace(/value="[^"]*" id="passwordInput"/, 'value="" id="passwordInput"');
+
+        const prodRegex = /const DEFAULT_PRODUCTS = \[[\s\S]*?\];/;
+        currentHtml = currentHtml.replace(prodRegex, 'const DEFAULT_PRODUCTS = ' + JSON.stringify(products) + ';');
+
+        currentHtml = currentHtml.split('<\\/script>').join('<' + '/script>');
+
+        const blob = new Blob([currentHtml], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'index.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        alert('✅ Đã xuất file index.html!\n\nHãy thay thế file HTML cũ bằng file mới.');
+    } catch (e) {
+        alert('❌ Lỗi xuất file: ' + e.message);
+    }
+}
+
+// ==================== EVENTS ====================
+document.getElementById('saveProduct').addEventListener('click', saveProduct);
+document.getElementById('exportCodeBtn').addEventListener('click', exportHTML);
+document.getElementById('closeAdmin').addEventListener('click', closeAdminPanel);
+document.getElementById('logoutBtn').addEventListener('click', logout);
+adminPanelBtn.addEventListener('click', openAdminPanel);
+adminOverlay.addEventListener('click', e => { if (e.target === adminOverlay) closeAdminPanel(); });
+
+categoryFilter.addEventListener('change', e => {
+    currentFilter = e.target.value;
+    renderProducts();
+});
+
+productGrid.addEventListener('click', e => {
+    const target = e.target.closest('.card-btn');
+    if (target && !target.classList.contains('download')) addToCart(Number(target.dataset.id));
+});
+
+cartItemsEl.addEventListener('click', e => {
+    const target = e.target.closest('button');
+    if (target && target.dataset.id && target.dataset.action) {
+        changeQty(Number(target.dataset.id), target.dataset.action);
+    }
+});
+
+document.getElementById('openCart').addEventListener('click', openCart);
+document.getElementById('closeCart').addEventListener('click', closeCart);
+cartOverlay.addEventListener('click', e => { if (e.target === cartOverlay) closeCart(); });
+document.getElementById('checkoutBtn').addEventListener('click', checkout);
+
+supportToggle.addEventListener('click', () => {
+    supportOptions.classList.toggle('show');
+    supportToggle.classList.toggle('active');
+    supportToggle.innerHTML = supportOptions.classList.contains('show') ? '✖' : '💬';
+});
+
+// ==================== INIT ====================
+renderProducts();
+renderCart();
+</script>
+</body>
+</html>
