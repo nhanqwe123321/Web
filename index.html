@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cửa Hàng Tiện Ích</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ================= WELCOME SCREEN ================= -->
+<div class="welcome-overlay" id="welcomeOverlay">
+<div class="welcome-box">
+<div class="welcome-logo">⬡</div>
+<div class="welcome-title">Cửa Hàng Tiện Ích</div>
+<div class="welcome-subtitle">Vui lòng chọn chế độ truy cập</div>
+
+<div class="choice-buttons" id="choiceButtons">
+<button class="choice-btn guest" id="guestBtn">
+<span class="icon">👤</span> Vào với tư cách Khách
+</button>
+<button class="choice-btn admin" id="adminChoiceBtn">
+<span class="icon">👑</span> Đăng nhập Admin
+</button>
+</div>
+
+<div class="admin-pwd-form" id="adminPwdForm">
+<label class="admin-pwd-label">🔐 Nhập mật khẩu Admin</label>
+<div class="password-input-wrapper">
+<span class="lock-icon">🔒</span>
+<input type="password" id="passwordInput" class="password-input" placeholder="Mật khẩu admin" autocomplete="off">
+<span class="eye-icon" id="togglePassword">👁️</span>
+</div>
+<div class="password-error" id="passwordError">Mật khẩu không đúng!</div>
+<button class="password-submit" id="passwordSubmit">Xác nhận</button>
+<button class="back-btn" id="backBtn">← Quay lại</button>
+</div>
+</div>
+</div>
+
+<!-- ================= SHOP ================= -->
+<div id="shopSection" class="shop-container">
+<div class="top-header">
+<div class="header-left">
+<div class="logo-icon">⬡</div>
+<div class="brand-info"><p>Cửa hàng tiện ích</p></div>
+<span class="product-count-badge" id="productCountBadge">0 sản phẩm</span>
+<span class="admin-badge" id="adminBadge">👑 ADMIN</span>
+</div>
+<div class="header-right">
+<button class="admin-btn" id="adminPanelBtn">⚙️ Quản Trị</button>
+<button class="header-logout-btn" id="headerLogoutBtn">🚪 Đăng Xuất</button>
+<button class="cart-btn" id="openCart">🛍️ <span class="cart-count" id="cartCount">0</span></button>
+</div>
+</div>
+
+<div class="sub-header">
+<div class="sub-header-left">
+<select class="category-select" id="categoryFilter">
+<option value="all">Tất cả</option>
+<option value="GAME">GAME</option>
+<option value="AIMLOCK">AIMLOCK</option>
+<option value="TỐI ƯU">TỐI ƯU</option>
+</select>
+</div>
+<button class="collapse-btn">Thu gọn ▸</button>
+</div>
+
+<main><div class="product-grid" id="productGrid"></div></main>
+
+<div class="cart-overlay" id="cartOverlay">
+<div class="cart-panel">
+<div class="cart-header"><h2>Giỏ hàng</h2><button class="close-btn" id="closeCart">&times;</button></div>
+<div class="cart-items" id="cartItems"></div>
+<div class="cart-total"><span>Tổng cộng:</span><span id="cartTotal">0 ₫</span></div>
+<button class="checkout-btn" id="checkoutBtn">Thanh toán</button>
+</div>
+</div>
+</div>
+
+<!-- ================= ADMIN PANEL ================= -->
+<div class="admin-overlay" id="adminOverlay">
+<div class="admin-panel">
+<div class="admin-header"><h2>👑 Bảng Quản Trị</h2><button class="close-btn" id="closeAdmin">&times;</button></div>
+<div class="admin-body">
+<h3 class="admin-section-title">➕ Thêm / Sửa Sản Phẩm</h3>
+<input type="hidden" id="editId">
+<div class="form-row">
+<div class="form-group"><label>Tên sản phẩm</label><input type="text" id="pName" placeholder="VD: Aimlock Pro"></div>
+<div class="form-group"><label>Danh mục</label>
+<select id="pCategory"><option value="GAME">GAME</option><option value="AIMLOCK">AIMLOCK</option><option value="TỐI ƯU">TỐI ƯU</option></select>
+</div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>Thời hạn</label><input type="text" id="pDuration" value="MỚI NHẤT"></div>
+<div class="form-group"><label>Giá (VNĐ)</label><input type="number" id="pPrice" value="0"></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>Badge</label><input type="text" id="pBadge" placeholder="HOT / MỚI"></div>
+<div class="form-group"><label>Icon (nếu không có ảnh)</label>
+<select id="pImg"><option value="file">📁 File</option><option value="aim">🎯 Aim</option><option value="freefire">🔥 Free Fire</option></select>
+</div>
+</div>
+<div class="form-group">
+<label>📷 Ảnh sản phẩm (tùy chọn)</label>
+<div class="image-upload-area">
+<div class="image-preview" id="imagePreview">
+<span class="placeholder">🖼️</span>
+</div>
+<div class="image-upload-controls">
+<button type="button" class="image-upload-btn" id="pickImageBtn">📷 Chọn Ảnh Từ Máy</button>
+<button type="button" class="image-remove-btn" id="removeImageBtn" style="display:none">🗑️ Xóa Ảnh</button>
+<input type="file" id="imageInput" accept="image/*">
+<div class="image-hint">Ảnh lưu dạng Base64. Tối đa 20MB.<br>Khuyến nghị &lt; 2MB để trang nhanh.</div>
+</div>
+</div>
+</div>
+<div class="form-group"><label>Link tải</label><input type="text" id="pLink" placeholder="https://..."></div>
+<div class="form-group"><label>Nút hiển thị</label><input type="text" id="pLinkText" value="Tải Xuống"></div>
+<button class="btn-primary" id="saveProduct">💾 Lưu Sản Phẩm</button>
+<button class="export-btn" id="exportCodeBtn">📥 Xuất Code HTML (Lưu Vào Code)</button>
+
+<div class="admin-product-list">
+<h3>📋 Danh sách sản phẩm (<span id="adminProductCount">0</span>)</h3>
+<div id="adminProductList"></div>
+</div>
+<button class="logout-btn" id="logoutBtn">🔓 Đăng Xuất Admin</button>
+</div>
+</div>
+</div>
+
+<!-- ================= SUPPORT ================= -->
+<div class="support-widget">
+<div class="support-options" id="supportOptions">
+<a href="https://zalo.me/0907415055" target="_blank" class="support-btn zalo-btn"><span>💬</span> Zalo</a>
+</div>
+<button class="support-toggle" id="supportToggle">💬</button>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
