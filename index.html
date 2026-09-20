@@ -2,72 +2,89 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bàn tay ảo Hologram - Mượt & Đẹp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bàn tay ảo chân thực - Mượt</title>
     <style>
         :root { --accent: #4cc9f0; }
-        * { box-sizing: border-box; }
-        html, body { height: 100%; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; margin: 0; }
+        
         body {
-            margin: 0; min-height: 100vh; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; gap: 12px; padding: 10px;
-            background: radial-gradient(circle at 50% 0%, #0d1117, #000000 80%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 10px; padding: 8px;
+            background: radial-gradient(circle at 50% 0%, #0d1117, #000 80%);
             color: #e8eefc; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
             overflow: hidden;
+            /* Responsive cho cả 2 chiều */
+            width: 100vw; height: 100vh;
         }
-        h1 { margin: 0; font-size: 18px; font-weight: 600; opacity: .9; letter-spacing: .5px; text-shadow: 0 0 10px rgba(76,201,240,0.5); }
         
+        h1 { margin: 0; font-size: 15px; font-weight: 600; opacity: .85; letter-spacing: .5px;
+             text-shadow: 0 0 10px rgba(76,201,240,0.5); }
+        
+        /* KHUNG TỰ ĐỘNG VỪA MÀN HÌNH NGANG VÀ DỌC */
         #stage {
-            position: relative; width: min(98vw, 1200px); aspect-ratio: 4 / 3;
-            border-radius: 18px; overflow: hidden; background: #000;
-            box-shadow: 0 20px 60px rgba(0,0,0,.8), 0 0 0 1px rgba(76,201,240,0.2);
-            transition: all 0.3s ease;
+            position: relative;
+            width: min(98vw, calc(98vh * 4 / 3));
+            aspect-ratio: 4 / 3;
+            max-width: 98vw;
+            max-height: 98vh;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #000;
+            box-shadow: 0 15px 50px rgba(0,0,0,.8), 0 0 0 1px rgba(76,201,240,0.25);
         }
         #stage:fullscreen { width: 100vw; height: 100vh; aspect-ratio: auto; border-radius: 0; }
         
         #video, #canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-        #video { object-fit: cover; transform: scaleX(-1); opacity: .35; transition: opacity .25s; }
+        #video { object-fit: cover; transform: scaleX(-1); opacity: .3; transition: opacity .25s; }
         #stage.no-video #video { opacity: 0; }
         #canvas { pointer-events: none; }
         
+        #ui-overlay {
+            position: absolute; top: 10px; left: 10px; z-index: 10;
+            background: rgba(0,0,0,.7); padding: 8px 14px; border-radius: 10px;
+            font-size: 13px; backdrop-filter: blur(6px);
+            border: 1px solid rgba(76,201,240,0.3);
+        }
+        #finger-info { font-weight: bold; color: #4cc9f0; font-size: 1.1em; }
+        
         #status {
-            position: absolute; left: 12px; bottom: 12px; padding: 6px 12px;
-            font-size: 12px; border-radius: 8px; color: #9fb3d1;
+            position: absolute; left: 10px; bottom: 10px; padding: 5px 10px;
+            font-size: 11px; border-radius: 6px; color: #9fb3d1;
             background: rgba(0,0,0,.6); backdrop-filter: blur(6px); z-index: 10;
             border: 1px solid rgba(76,201,240,0.2);
         }
         
-        #ui-overlay {
-            position: absolute; top: 12px; left: 12px; z-index: 10;
-            background: rgba(0,0,0,.7); padding: 10px 16px; border-radius: 12px;
-            font-size: 14px; backdrop-filter: blur(6px); border: 1px solid rgba(76,201,240,0.3);
-            box-shadow: 0 0 20px rgba(76,201,240,0.1);
-        }
-        #finger-info { font-weight: bold; color: #4cc9f0; font-size: 1.2em; margin-bottom: 4px; text-shadow: 0 0 8px rgba(76,201,240,0.8); }
-        
-        .toolbar { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; z-index: 10; }
+        .toolbar { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
         button {
-            padding: 9px 18px; font-size: 14px; color: #e8eefc; background: rgba(76,201,240,.1);
+            padding: 8px 16px; font-size: 13px; color: #e8eefc; background: rgba(76,201,240,.1);
             border: 1px solid rgba(76,201,240,.3); border-radius: 999px; cursor: pointer; transition: .2s;
         }
-        button:hover { background: rgba(76,201,240,.25); box-shadow: 0 0 15px rgba(76,201,240,0.4); }
-        button.active { background: rgba(76,201,240,.3); border-color: var(--accent); box-shadow: 0 0 20px rgba(76,201,240,0.6); }
-        #hint { margin: 0; max-width: 640px; font-size: 13px; text-align: center; color: #8ea2c0; z-index: 10; }
+        button:hover { background: rgba(76,201,240,.25); }
+        button.active { background: rgba(76,201,240,.3); border-color: var(--accent); }
+        
+        #hint { margin: 0; font-size: 11px; text-align: center; color: #8ea2c0; max-width: 90vw; }
+        
+        /* Ẩn bớt text khi màn hình nhỏ */
+        @media (max-height: 500px) {
+            h1 { font-size: 12px; }
+            #hint { display: none; }
+        }
     </style>
 </head>
 <body>
 
-    <h1>🖐️ Bàn tay ảo Hologram</h1>
+    <h1>🖐️ Bàn tay ảo chân thực</h1>
 
     <div id="stage">
-        <video id="video" playsinline muted></video>
+        <video id="video" playsinline muted autoplay></video>
         <canvas id="canvas"></canvas>
         
         <div id="ui-overlay">
             <div id="finger-info">✋ Số ngón: -</div>
-            <div id="message">Đưa tay vào khung hình nhé!</div>
         </div>
-        <div id="status">Đang tải mô hình AI…</div>
+        <div id="status">Đang tải AI…</div>
     </div>
 
     <div class="toolbar">
@@ -75,10 +92,7 @@
         <button id="btnFullscreen">Toàn màn hình</button>
     </div>
 
-    <p id="hint">
-        Hãy cho phép trình duyệt truy cập camera rồi giơ tay trước ống kính.
-        Trang cần chạy trên <b>https</b> hoặc <b>localhost</b>.
-    </p>
+    <p id="hint">Chạy trên <b>https</b> hoặc <b>localhost</b> để camera hoạt động</p>
 
 <script type="module">
 import { HandLandmarker, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs";
@@ -88,36 +102,56 @@ const VERSION   = "0.10.14";
 const WASM_PATH = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${VERSION}/wasm`;
 const MODEL_URL = "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task";
 
-const SMOOTHING = 0.75;  
-const NUM_HANDS = 2;     
-const STABLE_FRAMES = 8;
+// SMOOTHING cao (0.88) => bàn tay ảo bám sát tay thật, ít delay
+const SMOOTHING = 0.88;
+const NUM_HANDS = 2;
 
-const HAND_CONNECTIONS = [
-  [0,1],[1,2],[2,3],[3,4], [0,5],[5,6],[6,7],[7,8], [5,9],[9,10],[10,11],[11,12],
-  [9,13],[13,14],[14,15],[15,16], [13,17],[17,18],[18,19],[19,20], [0,17]
+/* Cấu trúc xương bàn tay với độ dày tương đối (1.0 = dày nhất) */
+const BONES = [
+  // [điểm A, điểm B, độ dày tương đối]
+  // Ngón cái
+  [0,1,1.0],[1,2,0.82],[2,3,0.66],[3,4,0.5],
+  // Ngón trỏ
+  [0,5,1.0],[5,6,0.82],[6,7,0.66],[7,8,0.5],
+  // Ngón giữa
+  [5,9,0.95],[9,10,0.85],[10,11,0.68],[11,12,0.5],
+  // Ngón áp út
+  [9,13,0.9],[13,14,0.78],[14,15,0.62],[15,16,0.46],
+  // Ngón út
+  [13,17,0.82],[17,18,0.68],[18,19,0.52],[19,20,0.38],
+  // Viền lòng bàn tay
+  [0,17,0.7]
 ];
-const PALM_IDX = [0, 1, 5, 9, 13, 17];
-const TIP_IDX  = [4, 8, 12, 16, 20];
-const PIP_IDX  = [2, 6, 10, 14, 18]; 
 
-/* ================== PHẦN TỬ DOM ================== */
+/* 5 ngón tay (để vẽ đầu ngón) */
+const FINGERS = [
+  [1,2,3,4],       // Cái
+  [5,6,7,8],       // Trỏ
+  [9,10,11,12],    // Giữa
+  [13,14,15,16],   // Áp út
+  [17,18,19,20]    // Út
+];
+const TIP_IDX = [4, 8, 12, 16, 20];
+const PIP_IDX = [2, 6, 10, 14, 18];
+
+/* Lòng bàn tay */
+const PALM_IDX = [0, 1, 5, 9, 13, 17];
+
+/* ================== DOM ================== */
 const VIDEO  = document.getElementById("video");
 const CANVAS = document.getElementById("canvas");
-const CTX    = CANVAS.getContext("2d");
+const CTX    = CANVAS.getContext("2d", { alpha: true });
 const STAGE  = document.getElementById("stage");
 const STATUS = document.getElementById("status");
 const BTN    = document.getElementById("btnVideo");
-const BTN_FULLSCREEN = document.getElementById("btnFullscreen");
+const BTN_FS = document.getElementById("btnFullscreen");
 const FINGER_INFO = document.getElementById("finger-info");
-const MESSAGE = document.getElementById("message");
 
 /* ================== TRẠNG THÁI ================== */
 let handLandmarker = null;
 let lastVideoTime  = -1;
-let smoothedHands  = [];   
-let lastAnimated = -1;
-let stableFingers = -1;
-let stableCounter = 0;
+let smoothedHands  = [];
+let fpsCounter = 0, lastFpsTime = 0, currentFps = 0;
 
 /* ================== KHỞI TẠO ================== */
 async function init() {
@@ -135,7 +169,8 @@ async function init() {
 
     STATUS.textContent = "Đang mở camera…";
     const stream = await navigator.mediaDevices.getUserMedia({
-      video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: "user" },
+      // Giảm xuống 480x360 để xử lý nhanh hơn, ít delay
+      video: { width: { ideal: 480 }, height: { ideal: 360 }, facingMode: "user" },
       audio: false
     });
 
@@ -147,15 +182,15 @@ async function init() {
     await VIDEO.play();
 
     resizeCanvas();
-    STATUS.textContent = "Sẵn sàng — giơ tay lên!";
+    STATUS.textContent = "Sẵn sàng!";
+    setTimeout(() => STATUS.style.opacity = '0.5', 2000);
     requestAnimationFrame(loop);
 
   } catch (err) {
     console.error(err);
     if (err.name === 'NotAllowedError' || err.message.includes('Permission')) {
-        STATUS.textContent = "❌ Lỗi: Quyền truy cập Camera bị từ chối!";
+        STATUS.textContent = "❌ Lỗi camera - Hãy chạy qua HTTPS/localhost";
         STATUS.style.color = "#ff8a8a";
-        MESSAGE.textContent = "Hãy chạy file qua HTTPS hoặc localhost.";
     } else {
         STATUS.textContent = "Lỗi: " + (err.message || err);
     }
@@ -163,8 +198,8 @@ async function init() {
 }
 
 function resizeCanvas() {
-  const w = VIDEO.videoWidth  || 640;
-  const h = VIDEO.videoHeight || 480;
+  const w = VIDEO.videoWidth  || 480;
+  const h = VIDEO.videoHeight || 360;
   CANVAS.width  = w;
   CANVAS.height = h;
   STAGE.style.aspectRatio = `${w} / ${h}`;
@@ -173,7 +208,15 @@ function resizeCanvas() {
 /* ================== VÒNG LẶP ================== */
 function loop() {
   if (handLandmarker && VIDEO.readyState >= 2) {
+    // FPS counter
+    fpsCounter++;
     const now = performance.now();
+    if (now - lastFpsTime > 1000) {
+      currentFps = fpsCounter;
+      fpsCounter = 0;
+      lastFpsTime = now;
+    }
+
     if (VIDEO.currentTime !== lastVideoTime) {
       lastVideoTime = VIDEO.currentTime;
       try {
@@ -213,12 +256,12 @@ function countFingers(landmarks) {
     for (let i = 1; i < 5; i++) {
         if (landmarks[TIP_IDX[i]].y < landmarks[PIP_IDX[i]].y) count++;
     }
-    const thumbTip = landmarks[TIP_IDX[0]];
-    const thumbIP = landmarks[PIP_IDX[0]];
-    const wrist = landmarks[0];
+    const thumbTip = landmarks[4];
+    const thumbIP  = landmarks[3];
+    const wrist    = landmarks[0];
     const distTip = Math.hypot(thumbTip.x - wrist.x, thumbTip.y - wrist.y);
-    const distIP = Math.hypot(thumbIP.x - wrist.x, thumbIP.y - wrist.y);
-    if (distTip > distIP * 1.2) count++;
+    const distIP  = Math.hypot(thumbIP.x - wrist.x, thumbIP.y - wrist.y);
+    if (distTip > distIP * 1.15) count++;
     return count;
 }
 
@@ -233,149 +276,132 @@ function render(result) {
   const hasHand = result && result.landmarks && result.landmarks.length > 0;
 
   if (!hasHand) {
-    stableFingers = -1; stableCounter = 0; lastAnimated = -1;
     FINGER_INFO.textContent = '✋ Số ngón: -';
-    MESSAGE.textContent = 'Đưa tay vào khung hình nhé!';
     smoothedHands = [];
     return;
   }
 
   const hands = smooth(result.landmarks);
 
+  // Đếm ngón
   let totalFingers = 0;
-  for (const lm of hands) { totalFingers += countFingers(lm); }
-  totalFingers = Math.min(totalFingers, 5); 
-  FINGER_INFO.textContent = `✋ Số ngón: ${totalFingers}`;
-
-  // Cập nhật trạng thái ổn định để đổi thông báo
-  if (totalFingers === stableFingers) {
-      stableCounter++;
-  } else {
-      stableFingers = totalFingers; stableCounter = 0; lastAnimated = -1;
-  }
-
-  if (stableCounter >= STABLE_FRAMES && lastAnimated !== totalFingers) {
-      lastAnimated = totalFingers;
-      if (totalFingers === 5) MESSAGE.textContent = `🌟 Xòe tay!`;
-      else if (totalFingers === 3) MESSAGE.textContent = `⚡ Ba ngón!`;
-      else if (totalFingers === 2) MESSAGE.textContent = `✌️ Chiến thắng!`;
-      else if (totalFingers === 1) MESSAGE.textContent = `☝️ Một ngón!`;
-      else if (totalFingers === 0) MESSAGE.textContent = `✊ Nắm tay!`;
-  }
+  for (const lm of hands) totalFingers += countFingers(lm);
+  totalFingers = Math.min(totalFingers, 5);
+  FINGER_INFO.textContent = `✋ Số ngón: ${totalFingers}  •  ${currentFps} FPS`;
 
   CTX.save();
   CTX.translate(W, 0);
-  CTX.scale(-1, 1); 
+  CTX.scale(-1, 1); // Lật gương cho khớp với video
 
-  // Vẽ bàn tay Hologram
-  hands.forEach((lm, i) => drawHologramHand(lm, W, H, i));
-
-  // Trò chơi: Quả cầu năng lượng (Pinch) - Tối giản để không lag
-  hands.forEach((lm) => {
-      const thumbTip = lm[4];
-      const indexTip = lm[8];
-      const dist = Math.hypot(thumbTip.x - indexTip.x, thumbTip.y - indexTip.y);
-      
-      if (dist < 0.07) { 
-          const midX = ((thumbTip.x + indexTip.x) / 2) * W;
-          const midY = ((thumbTip.y + indexTip.y) / 2) * H;
-          const radius = 15 + Math.sin(performance.now() * 0.01) * 5; 
-          
-          // Vẽ quả cầu đơn giản (không dùng gradient phức tạp)
-          CTX.beginPath();
-          CTX.arc(midX, midY, radius, 0, Math.PI * 2);
-          CTX.fillStyle = 'rgba(76, 201, 240, 0.4)';
-          CTX.fill();
-          CTX.strokeStyle = '#ffffff';
-          CTX.lineWidth = 2;
-          CTX.stroke();
-      }
+  hands.forEach((lm, i) => {
+    const P = lm.map(p => ({ x: p.x * W, y: p.y * H }));
+    drawRealisticHand(P, i === 0 ? 190 : 280, W, H);
   });
-
-  // Cầu nối 2 tay - Tối giản
-  if (hands.length === 2) {
-      const tip1 = hands[0][8]; 
-      const tip2 = hands[1][8]; 
-      const dist = Math.hypot(tip1.x - tip2.x, tip1.y - tip2.y);
-
-      if (dist < 0.3) { 
-          CTX.beginPath();
-          CTX.moveTo(tip1.x * W, tip1.y * H);
-          CTX.lineTo(tip2.x * W, tip2.y * H);
-          CTX.strokeStyle = `rgba(76, 201, 240, ${1 - dist * 3})`;
-          CTX.lineWidth = 3;
-          CTX.setLineDash([5, 5]); // Nét đứt cho nhẹ
-          CTX.stroke();
-          CTX.setLineDash([]);
-      }
-  }
 
   CTX.restore();
 }
 
-/* ================== VẼ BÀN TAY HOLOGRAM CHÂN THỰC ================== */
-function drawHologramHand(lm, W, H, handIndex) {
-  const P = lm.map(p => ({ x: p.x * W, y: p.y * H }));
-  
-  // Màu sắc: Xanh lam (Cyan) cho tay 1, Tím (Purple) cho tay 2
-  const hue = handIndex === 0 ? 190 : 280; 
+/* ================== VẼ BÀN TAY CHÂN THỰC ================== */
+function drawRealisticHand(P, hue, W, H) {
+  // Ước lượng kích thước bàn tay để scale độ dày
+  const handScale = Math.hypot(P[0].x - P[9].x, P[0].y - P[9].y);
+  const baseW = Math.max(10, handScale * 0.28);
 
   CTX.lineCap  = "round";
   CTX.lineJoin = "round";
 
-  // 1. Vẽ lòng bàn tay (Palm) - Tạo khối 3D
+  /* ---------- 1. LÒNG BÀN TAY (Palm) ---------- */
   const palm = PALM_IDX.map(i => P[i]);
   CTX.beginPath();
   CTX.moveTo(palm[0].x, palm[0].y);
-  for (let i = 1; i < palm.length; i++) CTX.lineTo(palm[i].x, palm[i].y);
+  // Vẽ viền lòng bàn tay bằng đường cong mượt
+  for (let i = 1; i < palm.length; i++) {
+    CTX.lineTo(palm[i].x, palm[i].y);
+  }
+  // Vòng lại qua ngón cái để tạo hình lòng bàn tay tự nhiên
+  CTX.quadraticCurveTo(
+    (palm[0].x + P[1].x) / 2, (palm[0].y + P[1].y) / 2,
+    palm[0].x, palm[0].y
+  );
   CTX.closePath();
-  
-  // Gradient tạo cảm giác cong của lòng bàn tay
-  const grad = CTX.createRadialGradient(palm[0].x, palm[0].y, 10, palm[0].x, palm[0].y, W * 0.3);
-  grad.addColorStop(0, `hsla(${hue}, 100%, 70%, 0.35)`);
-  grad.addColorStop(1, `hsla(${hue+40}, 100%, 50%, 0.05)`);
-  CTX.fillStyle = grad;
+
+  // Gradient cho lòng bàn tay (tạo khối 3D)
+  const cx = (P[0].x + P[9].x) / 2;
+  const cy = (P[0].y + P[9].y) / 2;
+  const palmGrad = CTX.createRadialGradient(cx, cy, 0, cx, cy, handScale * 0.8);
+  palmGrad.addColorStop(0, `hsla(${hue}, 95%, 65%, 0.45)`);
+  palmGrad.addColorStop(0.6, `hsla(${hue}, 90%, 55%, 0.25)`);
+  palmGrad.addColorStop(1, `hsla(${hue + 40}, 85%, 45%, 0.08)`);
+  CTX.fillStyle = palmGrad;
   CTX.fill();
 
-  // 2. Vẽ các ngón tay (Fingers) - Nét dày như khối cầu
-  CTX.strokeStyle = `hsla(${hue}, 100%, 65%, 0.85)`;
-  CTX.lineWidth   = Math.max(8, W * 0.012); // Nét dày hơn để giống ngón tay thật
+  // Viền lòng bàn tay phát sáng nhẹ
+  CTX.strokeStyle = `hsla(${hue}, 100%, 75%, 0.7)`;
+  CTX.lineWidth = 2;
+  CTX.stroke();
 
-  for (const [a, b] of HAND_CONNECTIONS) {
+  /* ---------- 2. CÁC ĐỐT XƯƠNG (Bones) ---------- */
+  // Vẽ từ gốc ra đầu ngón, độ dày giảm dần
+  for (const [a, b, w] of BONES) {
+    const p1 = P[a];
+    const p2 = P[b];
+    const lineW = baseW * w;
+
+    // Nét ngoài (viền) 
+    CTX.strokeStyle = `hsla(${hue}, 100%, 75%, 0.85)`;
+    CTX.lineWidth = lineW;
     CTX.beginPath();
-    CTX.moveTo(P[a].x, P[a].y);
-    CTX.lineTo(P[b].x, P[b].y);
+    CTX.moveTo(p1.x, p1.y);
+    CTX.lineTo(p2.x, p2.y);
+    CTX.stroke();
+
+    // Nét trong (highlight) tạo cảm giác khối tròn
+    CTX.strokeStyle = `hsla(${hue}, 100%, 95%, 0.55)`;
+    CTX.lineWidth = lineW * 0.35;
+    CTX.beginPath();
+    CTX.moveTo(p1.x, p1.y);
+    CTX.lineTo(p2.x, p2.y);
     CTX.stroke();
   }
 
-  // 3. Vẽ viền sáng bên trong (Inner Highlight) để tạo độ chân thực
-  CTX.strokeStyle = `hsla(${hue}, 100%, 90%, 0.4)`;
-  CTX.lineWidth   = Math.max(2, W * 0.003);
-  for (const [a, b] of HAND_CONNECTIONS) {
-    CTX.beginPath();
-    CTX.moveTo(P[a].x, P[a].y);
-    CTX.lineTo(P[b].x, P[b].y);
-    CTX.stroke();
-  }
-
-  // 4. Vẽ các khớp (Joints) - Nhỏ và tinh tế
-  CTX.fillStyle = "#ffffff";
+  /* ---------- 3. CÁC KHỚP (Joints) ---------- */
   for (let i = 0; i < P.length; i++) {
     const isTip = TIP_IDX.includes(i);
-    const r = isTip ? Math.max(5, W * 0.008) : Math.max(3, W * 0.004);
-    CTX.beginPath();
-    CTX.arc(P[i].x, P[i].y, r, 0, Math.PI * 2);
-    CTX.fill();
+    const isPip = PIP_IDX.includes(i);
+    
+    // Khớp ở đầu ngón tay: nhỏ, sáng
+    if (isTip) {
+      // Vòng sáng ngoài (móng tay)
+      CTX.beginPath();
+      CTX.arc(P[i].x, P[i].y, baseW * 0.28, 0, Math.PI * 2);
+      CTX.fillStyle = `hsla(${hue}, 100%, 90%, 0.35)`;
+      CTX.fill();
+
+      // Điểm sáng trung tâm (đầu ngón)
+      CTX.beginPath();
+      CTX.arc(P[i].x, P[i].y, baseW * 0.16, 0, Math.PI * 2);
+      CTX.fillStyle = `hsla(${hue}, 100%, 98%, 0.95)`;
+      CTX.fill();
+    } else if (isPip) {
+      // Khớp giữa: đốt ngón
+      CTX.beginPath();
+      CTX.arc(P[i].x, P[i].y, baseW * 0.18, 0, Math.PI * 2);
+      CTX.fillStyle = `hsla(${hue}, 100%, 88%, 0.6)`;
+      CTX.fill();
+    } else if (i !== 0) {
+      // Các khớp khác: chấm nhỏ
+      CTX.beginPath();
+      CTX.arc(P[i].x, P[i].y, baseW * 0.12, 0, Math.PI * 2);
+      CTX.fillStyle = `hsla(${hue}, 100%, 85%, 0.5)`;
+      CTX.fill();
+    }
   }
 
-  // 5. Đầu ngón phát sáng (Fingertips Glow) - Nhấp nháy nhẹ
-  const pulse = 1 + Math.sin(performance.now() * 0.005) * 0.2;
-  CTX.fillStyle = `hsla(${hue}, 100%, 85%, 1)`;
-  for (const i of TIP_IDX) {
-    CTX.beginPath();
-    CTX.arc(P[i].x, P[i].y, Math.max(7, W * 0.012) * pulse, 0, Math.PI * 2);
-    CTX.fill();
-  }
+  /* ---------- 4. CỔ TAY (Wrist glow) ---------- */
+  CTX.beginPath();
+  CTX.arc(P[0].x, P[0].y, baseW * 0.5, 0, Math.PI * 2);
+  CTX.fillStyle = `hsla(${hue}, 100%, 70%, 0.25)`;
+  CTX.fill();
 }
 
 /* ================== NÚT ĐIỀU KHIỂN ================== */
@@ -385,22 +411,18 @@ BTN.addEventListener("click", () => {
   BTN.textContent = hidden ? "Hiện video" : "Ẩn video";
 });
 
-BTN_FULLSCREEN.addEventListener("click", () => {
+BTN_FS.addEventListener("click", () => {
   if (!document.fullscreenElement) {
-    STAGE.requestFullscreen().catch(err => {
-      console.error(`Lỗi khi bật toàn màn hình: ${err.message}`);
-    });
+    STAGE.requestFullscreen().catch(err => console.error(err));
   } else {
     document.exitFullscreen();
   }
 });
 
 document.addEventListener("fullscreenchange", () => {
-  if (document.fullscreenElement) {
-    BTN_FULLSCREEN.textContent = "Thoát toàn màn hình";
-  } else {
-    BTN_FULLSCREEN.textContent = "Toàn màn hình";
-  }
+  BTN_FS.textContent = document.fullscreenElement ? "Thoát" : "Toàn màn hình";
+  // Cập nhật lại kích thước canvas khi vào/ra fullscreen
+  setTimeout(resizeCanvas, 100);
 });
 
 /* ================== BẮT ĐẦU ================== */
