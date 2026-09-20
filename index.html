@@ -15,14 +15,12 @@
             background: radial-gradient(circle at 50% 0%, #0d1117, #000 80%);
             color: #e8eefc; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
             overflow: hidden;
-            /* Responsive cho cả 2 chiều */
             width: 100vw; height: 100vh;
         }
         
         h1 { margin: 0; font-size: 15px; font-weight: 600; opacity: .85; letter-spacing: .5px;
              text-shadow: 0 0 10px rgba(76,201,240,0.5); }
         
-        /* KHUNG TỰ ĐỘNG VỪA MÀN HÌNH NGANG VÀ DỌC */
         #stage {
             position: relative;
             width: min(98vw, calc(98vh * 4 / 3));
@@ -66,7 +64,6 @@
         
         #hint { margin: 0; font-size: 11px; text-align: center; color: #8ea2c0; max-width: 90vw; }
         
-        /* Ẩn bớt text khi màn hình nhỏ */
         @media (max-height: 500px) {
             h1 { font-size: 12px; }
             #hint { display: none; }
@@ -102,39 +99,21 @@ const VERSION   = "0.10.14";
 const WASM_PATH = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${VERSION}/wasm`;
 const MODEL_URL = "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task";
 
-// SMOOTHING cao (0.88) => bàn tay ảo bám sát tay thật, ít delay
 const SMOOTHING = 0.88;
 const NUM_HANDS = 2;
 
-/* Cấu trúc xương bàn tay với độ dày tương đối (1.0 = dày nhất) */
+/* ĐỘ DÀY TƯƠNG ĐỐI CỦA TỪNG ĐỐT XƯƠNG */
 const BONES = [
-  // [điểm A, điểm B, độ dày tương đối]
-  // Ngón cái
   [0,1,1.0],[1,2,0.82],[2,3,0.66],[3,4,0.5],
-  // Ngón trỏ
   [0,5,1.0],[5,6,0.82],[6,7,0.66],[7,8,0.5],
-  // Ngón giữa
   [5,9,0.95],[9,10,0.85],[10,11,0.68],[11,12,0.5],
-  // Ngón áp út
   [9,13,0.9],[13,14,0.78],[14,15,0.62],[15,16,0.46],
-  // Ngón út
   [13,17,0.82],[17,18,0.68],[18,19,0.52],[19,20,0.38],
-  // Viền lòng bàn tay
   [0,17,0.7]
 ];
 
-/* 5 ngón tay (để vẽ đầu ngón) */
-const FINGERS = [
-  [1,2,3,4],       // Cái
-  [5,6,7,8],       // Trỏ
-  [9,10,11,12],    // Giữa
-  [13,14,15,16],   // Áp út
-  [17,18,19,20]    // Út
-];
 const TIP_IDX = [4, 8, 12, 16, 20];
 const PIP_IDX = [2, 6, 10, 14, 18];
-
-/* Lòng bàn tay */
 const PALM_IDX = [0, 1, 5, 9, 13, 17];
 
 /* ================== DOM ================== */
@@ -169,7 +148,6 @@ async function init() {
 
     STATUS.textContent = "Đang mở camera…";
     const stream = await navigator.mediaDevices.getUserMedia({
-      // Giảm xuống 480x360 để xử lý nhanh hơn, ít delay
       video: { width: { ideal: 480 }, height: { ideal: 360 }, facingMode: "user" },
       audio: false
     });
@@ -208,7 +186,6 @@ function resizeCanvas() {
 /* ================== VÒNG LẶP ================== */
 function loop() {
   if (handLandmarker && VIDEO.readyState >= 2) {
-    // FPS counter
     fpsCounter++;
     const now = performance.now();
     if (now - lastFpsTime > 1000) {
@@ -283,7 +260,6 @@ function render(result) {
 
   const hands = smooth(result.landmarks);
 
-  // Đếm ngón
   let totalFingers = 0;
   for (const lm of hands) totalFingers += countFingers(lm);
   totalFingers = Math.min(totalFingers, 5);
@@ -291,7 +267,7 @@ function render(result) {
 
   CTX.save();
   CTX.translate(W, 0);
-  CTX.scale(-1, 1); // Lật gương cho khớp với video
+  CTX.scale(-1, 1);
 
   hands.forEach((lm, i) => {
     const P = lm.map(p => ({ x: p.x * W, y: p.y * H }));
@@ -301,53 +277,50 @@ function render(result) {
   CTX.restore();
 }
 
-/* ================== VẼ BÀN TAY CHÂN THỰC ================== */
+/* ================== VẼ BÀN TAY CHÂN THỰC (ĐÃ THU NHỎ) ================== */
 function drawRealisticHand(P, hue, W, H) {
-  // Ước lượng kích thước bàn tay để scale độ dày
+  // Ước lượng kích thước bàn tay
   const handScale = Math.hypot(P[0].x - P[9].x, P[0].y - P[9].y);
-  const baseW = Math.max(10, handScale * 0.28);
+  
+  // ✅ GIẢM TỪ 0.28 XUỐNG 0.18 ĐỂ BÀN TAY NHỎ VÀ THANH MẢNH HƠN
+  const baseW = Math.max(6, handScale * 0.18);
 
   CTX.lineCap  = "round";
   CTX.lineJoin = "round";
 
-  /* ---------- 1. LÒNG BÀN TAY (Palm) ---------- */
+  /* ---------- 1. LÒNG BÀN TAY ---------- */
   const palm = PALM_IDX.map(i => P[i]);
   CTX.beginPath();
   CTX.moveTo(palm[0].x, palm[0].y);
-  // Vẽ viền lòng bàn tay bằng đường cong mượt
   for (let i = 1; i < palm.length; i++) {
     CTX.lineTo(palm[i].x, palm[i].y);
   }
-  // Vòng lại qua ngón cái để tạo hình lòng bàn tay tự nhiên
   CTX.quadraticCurveTo(
     (palm[0].x + P[1].x) / 2, (palm[0].y + P[1].y) / 2,
     palm[0].x, palm[0].y
   );
   CTX.closePath();
 
-  // Gradient cho lòng bàn tay (tạo khối 3D)
   const cx = (P[0].x + P[9].x) / 2;
   const cy = (P[0].y + P[9].y) / 2;
   const palmGrad = CTX.createRadialGradient(cx, cy, 0, cx, cy, handScale * 0.8);
-  palmGrad.addColorStop(0, `hsla(${hue}, 95%, 65%, 0.45)`);
-  palmGrad.addColorStop(0.6, `hsla(${hue}, 90%, 55%, 0.25)`);
-  palmGrad.addColorStop(1, `hsla(${hue + 40}, 85%, 45%, 0.08)`);
+  palmGrad.addColorStop(0, `hsla(${hue}, 95%, 65%, 0.4)`);
+  palmGrad.addColorStop(0.6, `hsla(${hue}, 90%, 55%, 0.22)`);
+  palmGrad.addColorStop(1, `hsla(${hue + 40}, 85%, 45%, 0.06)`);
   CTX.fillStyle = palmGrad;
   CTX.fill();
 
-  // Viền lòng bàn tay phát sáng nhẹ
-  CTX.strokeStyle = `hsla(${hue}, 100%, 75%, 0.7)`;
-  CTX.lineWidth = 2;
+  CTX.strokeStyle = `hsla(${hue}, 100%, 75%, 0.65)`;
+  CTX.lineWidth = 1.5;
   CTX.stroke();
 
-  /* ---------- 2. CÁC ĐỐT XƯƠNG (Bones) ---------- */
-  // Vẽ từ gốc ra đầu ngón, độ dày giảm dần
+  /* ---------- 2. CÁC ĐỐT XƯƠNG ---------- */
   for (const [a, b, w] of BONES) {
     const p1 = P[a];
     const p2 = P[b];
     const lineW = baseW * w;
 
-    // Nét ngoài (viền) 
+    // Viền ngoài
     CTX.strokeStyle = `hsla(${hue}, 100%, 75%, 0.85)`;
     CTX.lineWidth = lineW;
     CTX.beginPath();
@@ -355,7 +328,7 @@ function drawRealisticHand(P, hue, W, H) {
     CTX.lineTo(p2.x, p2.y);
     CTX.stroke();
 
-    // Nét trong (highlight) tạo cảm giác khối tròn
+    // Highlight trắng bên trong
     CTX.strokeStyle = `hsla(${hue}, 100%, 95%, 0.55)`;
     CTX.lineWidth = lineW * 0.35;
     CTX.beginPath();
@@ -364,12 +337,11 @@ function drawRealisticHand(P, hue, W, H) {
     CTX.stroke();
   }
 
-  /* ---------- 3. CÁC KHỚP (Joints) ---------- */
+  /* ---------- 3. CÁC KHỚP ---------- */
   for (let i = 0; i < P.length; i++) {
     const isTip = TIP_IDX.includes(i);
     const isPip = PIP_IDX.includes(i);
     
-    // Khớp ở đầu ngón tay: nhỏ, sáng
     if (isTip) {
       // Vòng sáng ngoài (móng tay)
       CTX.beginPath();
@@ -377,19 +349,17 @@ function drawRealisticHand(P, hue, W, H) {
       CTX.fillStyle = `hsla(${hue}, 100%, 90%, 0.35)`;
       CTX.fill();
 
-      // Điểm sáng trung tâm (đầu ngón)
+      // Điểm sáng trung tâm
       CTX.beginPath();
       CTX.arc(P[i].x, P[i].y, baseW * 0.16, 0, Math.PI * 2);
       CTX.fillStyle = `hsla(${hue}, 100%, 98%, 0.95)`;
       CTX.fill();
     } else if (isPip) {
-      // Khớp giữa: đốt ngón
       CTX.beginPath();
       CTX.arc(P[i].x, P[i].y, baseW * 0.18, 0, Math.PI * 2);
       CTX.fillStyle = `hsla(${hue}, 100%, 88%, 0.6)`;
       CTX.fill();
     } else if (i !== 0) {
-      // Các khớp khác: chấm nhỏ
       CTX.beginPath();
       CTX.arc(P[i].x, P[i].y, baseW * 0.12, 0, Math.PI * 2);
       CTX.fillStyle = `hsla(${hue}, 100%, 85%, 0.5)`;
@@ -397,10 +367,10 @@ function drawRealisticHand(P, hue, W, H) {
     }
   }
 
-  /* ---------- 4. CỔ TAY (Wrist glow) ---------- */
+  /* ---------- 4. CỔ TAY ---------- */
   CTX.beginPath();
-  CTX.arc(P[0].x, P[0].y, baseW * 0.5, 0, Math.PI * 2);
-  CTX.fillStyle = `hsla(${hue}, 100%, 70%, 0.25)`;
+  CTX.arc(P[0].x, P[0].y, baseW * 0.45, 0, Math.PI * 2);
+  CTX.fillStyle = `hsla(${hue}, 100%, 70%, 0.2)`;
   CTX.fill();
 }
 
@@ -421,7 +391,6 @@ BTN_FS.addEventListener("click", () => {
 
 document.addEventListener("fullscreenchange", () => {
   BTN_FS.textContent = document.fullscreenElement ? "Thoát" : "Toàn màn hình";
-  // Cập nhật lại kích thước canvas khi vào/ra fullscreen
   setTimeout(resizeCanvas, 100);
 });
 
