@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bàn tay ảo Neon - Hiệu ứng ký hiệu</title>
+    <title>Bàn tay ảo Hologram - Mượt & Đẹp</title>
     <style>
         :root { --accent: #4cc9f0; }
         * { box-sizing: border-box; }
@@ -45,13 +45,6 @@
         }
         #finger-info { font-weight: bold; color: #4cc9f0; font-size: 1.2em; margin-bottom: 4px; text-shadow: 0 0 8px rgba(76,201,240,0.8); }
         
-        #big-number {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-size: 120px; font-weight: 900; color: #fff; text-shadow: 0 0 20px #4cc9f0, 0 0 40px #4cc9f0, 0 0 80px #f72585;
-            opacity: 0; transition: opacity 0.3s, transform 0.3s; z-index: 20; pointer-events: none;
-        }
-        #big-number.show { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
-        
         .toolbar { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; z-index: 10; }
         button {
             padding: 9px 18px; font-size: 14px; color: #e8eefc; background: rgba(76,201,240,.1);
@@ -60,24 +53,15 @@
         button:hover { background: rgba(76,201,240,.25); box-shadow: 0 0 15px rgba(76,201,240,0.4); }
         button.active { background: rgba(76,201,240,.3); border-color: var(--accent); box-shadow: 0 0 20px rgba(76,201,240,0.6); }
         #hint { margin: 0; max-width: 640px; font-size: 13px; text-align: center; color: #8ea2c0; z-index: 10; }
-        
-        .confetti {
-            position: fixed; top: -10px; z-index: 9999; pointer-events: none;
-            animation: fall linear forwards;
-        }
-        @keyframes fall {
-            to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
-        }
     </style>
 </head>
 <body>
 
-    <h1>🖐️ Bàn tay ảo Neon - Hiệu ứng ký hiệu</h1>
+    <h1>🖐️ Bàn tay ảo Hologram</h1>
 
     <div id="stage">
         <video id="video" playsinline muted></video>
         <canvas id="canvas"></canvas>
-        <div id="big-number">5</div>
         
         <div id="ui-overlay">
             <div id="finger-info">✋ Số ngón: -</div>
@@ -116,16 +100,6 @@ const PALM_IDX = [0, 1, 5, 9, 13, 17];
 const TIP_IDX  = [4, 8, 12, 16, 20];
 const PIP_IDX  = [2, 6, 10, 14, 18]; 
 
-/* Bộ ký hiệu (Symbols) cho các hiệu ứng */
-const SYMBOLS = {
-  SPARKLE: ['✨', '⭐', '💫', '🌟'],
-  HEART:   ['❤️', '💖', '💕', '💗', '💘'],
-  LIGHT:   ['⚡', '🔥', '💥'],
-  STAR:    ['🌟', '⭐', '✨', '💫'],
-  VORTEX:  ['🌀', '💠', '🔷'],
-  FIRE:    ['🔥', '💥', '☄️']
-};
-
 /* ================== PHẦN TỬ DOM ================== */
 const VIDEO  = document.getElementById("video");
 const CANVAS = document.getElementById("canvas");
@@ -136,7 +110,6 @@ const BTN    = document.getElementById("btnVideo");
 const BTN_FULLSCREEN = document.getElementById("btnFullscreen");
 const FINGER_INFO = document.getElementById("finger-info");
 const MESSAGE = document.getElementById("message");
-const BIG_NUMBER = document.getElementById("big-number");
 
 /* ================== TRẠNG THÁI ================== */
 let handLandmarker = null;
@@ -145,9 +118,6 @@ let smoothedHands  = [];
 let lastAnimated = -1;
 let stableFingers = -1;
 let stableCounter = 0;
-let particles = [];       // Hạt năng lượng (chấm tròn)
-let symbolParticles = []; // Hạt ký hiệu (emoji)
-let prevFingerCount = -1; // Để phát hiện đột ngột nắm rồi mở
 
 /* ================== KHỞI TẠO ================== */
 async function init() {
@@ -252,26 +222,6 @@ function countFingers(landmarks) {
     return count;
 }
 
-/* ================== TẠO KÝ HIỆU BAY ================== */
-function spawnSymbol(x, y, type, count = 1) {
-    const list = SYMBOLS[type] || SYMBOLS.SPARKLE;
-    for (let i = 0; i < count; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 3 + 1;
-        symbolParticles.push({
-            x: x, y: y,
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed - 1.5, // Bay lên trên
-            life: 1.0,
-            decay: 0.008 + Math.random() * 0.008,
-            symbol: list[Math.floor(Math.random() * list.length)],
-            size: 20 + Math.random() * 20,
-            rotation: Math.random() * Math.PI * 2,
-            rotSpeed: (Math.random() - 0.5) * 0.2
-        });
-    }
-}
-
 /* ================== VẼ ================== */
 function render(result) {
   const W = CANVAS.width;
@@ -284,12 +234,9 @@ function render(result) {
 
   if (!hasHand) {
     stableFingers = -1; stableCounter = 0; lastAnimated = -1;
-    prevFingerCount = -1;
     FINGER_INFO.textContent = '✋ Số ngón: -';
     MESSAGE.textContent = 'Đưa tay vào khung hình nhé!';
-    BIG_NUMBER.classList.remove('show');
     smoothedHands = [];
-    particles = [];
     return;
   }
 
@@ -300,68 +247,30 @@ function render(result) {
   totalFingers = Math.min(totalFingers, 5); 
   FINGER_INFO.textContent = `✋ Số ngón: ${totalFingers}`;
 
-  /* --- KÍCH HOẠT HIỆU ỨNG THEO CỬ CHỈ --- */
-  
-  // Hiệu ứng đặc biệt khi thay đổi số ngón đột ngột (nắm rồi mở)
-  if (prevFingerCount !== -1 && totalFingers !== prevFingerCount) {
-      const hand = hands[0];
-      const tip = hand[8]; // Ngón trỏ
-      if (prevFingerCount === 0 && totalFingers >= 3) {
-          // Nắm tay rồi mở đột ngột → bùng nổ lửa
-          spawnSymbol(tip.x * W, tip.y * H, 'FIRE', 20);
-      }
-  }
-  prevFingerCount = totalFingers;
-
-  // Hiệu ứng theo số ngón tay
-  if (stableCounter >= STABLE_FRAMES && lastAnimated !== totalFingers) {
-      lastAnimated = totalFingers;
-      BIG_NUMBER.textContent = totalFingers;
-      BIG_NUMBER.classList.add('show');
-      setTimeout(() => BIG_NUMBER.classList.remove('show'), 1500);
-
-      // Nổ tung ký hiệu tại vị trí bàn tay
-      const hand = hands[0];
-      const palmX = hand[0].x * W;
-      const palmY = hand[0].y * H;
-
-      if (totalFingers === 5) {
-          MESSAGE.textContent = `🌟 Xòe tay! Bùng nổ sao!`;
-          spawnSymbol(palmX, palmY, 'STAR', 25);
-      } else if (totalFingers === 3) {
-          MESSAGE.textContent = `⚡ Ba ngón - Sấm sét!`;
-          spawnSymbol(palmX, palmY, 'LIGHT', 20);
-      } else if (totalFingers === 2) {
-          MESSAGE.textContent = `❤️ Hai ngón - Trái tim!`;
-          spawnSymbol(palmX, palmY, 'HEART', 20);
-      } else if (totalFingers === 1) {
-          MESSAGE.textContent = `✨ Một ngón - Chỉ điểm!`;
-          spawnSymbol(palmX, palmY, 'SPARKLE', 10);
-      } else if (totalFingers === 0) {
-          MESSAGE.textContent = `✊ Nắm tay!`;
-      }
-
-      spawnConfetti();
-  }
-
-  // Cập nhật ổn định
+  // Cập nhật trạng thái ổn định để đổi thông báo
   if (totalFingers === stableFingers) {
       stableCounter++;
   } else {
       stableFingers = totalFingers; stableCounter = 0; lastAnimated = -1;
-      BIG_NUMBER.classList.remove('show');
   }
 
-  // Cập nhật & vẽ các hạt
-  updateAndDrawParticles(W, H);
+  if (stableCounter >= STABLE_FRAMES && lastAnimated !== totalFingers) {
+      lastAnimated = totalFingers;
+      if (totalFingers === 5) MESSAGE.textContent = `🌟 Xòe tay!`;
+      else if (totalFingers === 3) MESSAGE.textContent = `⚡ Ba ngón!`;
+      else if (totalFingers === 2) MESSAGE.textContent = `✌️ Chiến thắng!`;
+      else if (totalFingers === 1) MESSAGE.textContent = `☝️ Một ngón!`;
+      else if (totalFingers === 0) MESSAGE.textContent = `✊ Nắm tay!`;
+  }
 
   CTX.save();
   CTX.translate(W, 0);
   CTX.scale(-1, 1); 
 
-  hands.forEach((lm, i) => drawNeonHand(lm, W, H, i));
+  // Vẽ bàn tay Hologram
+  hands.forEach((lm, i) => drawHologramHand(lm, W, H, i));
 
-  // Trò chơi: Quả cầu năng lượng (Pinch)
+  // Trò chơi: Quả cầu năng lượng (Pinch) - Tối giản để không lag
   hands.forEach((lm) => {
       const thumbTip = lm[4];
       const indexTip = lm[8];
@@ -370,62 +279,67 @@ function render(result) {
       if (dist < 0.07) { 
           const midX = ((thumbTip.x + indexTip.x) / 2) * W;
           const midY = ((thumbTip.y + indexTip.y) / 2) * H;
-          const radius = 15 + Math.sin(performance.now() * 0.01) * 8; 
+          const radius = 15 + Math.sin(performance.now() * 0.01) * 5; 
           
+          // Vẽ quả cầu đơn giản (không dùng gradient phức tạp)
           CTX.beginPath();
           CTX.arc(midX, midY, radius, 0, Math.PI * 2);
-          const gradient = CTX.createRadialGradient(midX, midY, 0, midX, midY, radius);
-          gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-          gradient.addColorStop(0.5, 'rgba(76, 201, 240, 0.8)');
-          gradient.addColorStop(1, 'rgba(76, 201, 240, 0)');
-          CTX.fillStyle = gradient;
+          CTX.fillStyle = 'rgba(76, 201, 240, 0.4)';
           CTX.fill();
-
-          // Vòng xoáy ký hiệu quanh quả cầu
-          if (Math.random() > 0.7) spawnSymbol(midX, midY, 'VORTEX', 1);
+          CTX.strokeStyle = '#ffffff';
+          CTX.lineWidth = 2;
+          CTX.stroke();
       }
   });
 
-  // Cầu nối 2 tay (Energy Bridge)
+  // Cầu nối 2 tay - Tối giản
   if (hands.length === 2) {
       const tip1 = hands[0][8]; 
       const tip2 = hands[1][8]; 
       const dist = Math.hypot(tip1.x - tip2.x, tip1.y - tip2.y);
 
       if (dist < 0.3) { 
-          const mx = (tip1.x + tip2.x) / 2 * W;
-          const my = (tip1.y + tip2.y) / 2 * H;
-          
           CTX.beginPath();
           CTX.moveTo(tip1.x * W, tip1.y * H);
           CTX.lineTo(tip2.x * W, tip2.y * H);
-          CTX.strokeStyle = `hsla(${(performance.now() * 0.1) % 360}, 100%, 70%, ${1 - dist * 3})`;
-          CTX.lineWidth = 4 + Math.sin(performance.now() * 0.02) * 3;
-          CTX.shadowBlur = 20;
-          CTX.shadowColor = '#4cc9f0';
+          CTX.strokeStyle = `rgba(76, 201, 240, ${1 - dist * 3})`;
+          CTX.lineWidth = 3;
+          CTX.setLineDash([5, 5]); // Nét đứt cho nhẹ
           CTX.stroke();
-          CTX.shadowBlur = 0;
-
-          // Bắn ký hiệu ở giữa cầu nối
-          if (Math.random() > 0.6) spawnSymbol(mx, my, 'LIGHT', 1);
+          CTX.setLineDash([]);
       }
   }
 
   CTX.restore();
 }
 
-/* ================== VẼ BÀN TAY NEON ================== */
-function drawNeonHand(lm, W, H, handIndex) {
+/* ================== VẼ BÀN TAY HOLOGRAM CHÂN THỰC ================== */
+function drawHologramHand(lm, W, H, handIndex) {
   const P = lm.map(p => ({ x: p.x * W, y: p.y * H }));
-  const hue = (P[0].x / W) * 360; 
+  
+  // Màu sắc: Xanh lam (Cyan) cho tay 1, Tím (Purple) cho tay 2
+  const hue = handIndex === 0 ? 190 : 280; 
 
   CTX.lineCap  = "round";
   CTX.lineJoin = "round";
 
-  CTX.shadowColor = `hsla(${hue}, 100%, 60%, 0.8)`;
-  CTX.shadowBlur = 15;
-  CTX.strokeStyle = `hsla(${hue}, 100%, 70%, 0.9)`;
-  CTX.lineWidth   = Math.max(6, W * 0.008);
+  // 1. Vẽ lòng bàn tay (Palm) - Tạo khối 3D
+  const palm = PALM_IDX.map(i => P[i]);
+  CTX.beginPath();
+  CTX.moveTo(palm[0].x, palm[0].y);
+  for (let i = 1; i < palm.length; i++) CTX.lineTo(palm[i].x, palm[i].y);
+  CTX.closePath();
+  
+  // Gradient tạo cảm giác cong của lòng bàn tay
+  const grad = CTX.createRadialGradient(palm[0].x, palm[0].y, 10, palm[0].x, palm[0].y, W * 0.3);
+  grad.addColorStop(0, `hsla(${hue}, 100%, 70%, 0.35)`);
+  grad.addColorStop(1, `hsla(${hue+40}, 100%, 50%, 0.05)`);
+  CTX.fillStyle = grad;
+  CTX.fill();
+
+  // 2. Vẽ các ngón tay (Fingers) - Nét dày như khối cầu
+  CTX.strokeStyle = `hsla(${hue}, 100%, 65%, 0.85)`;
+  CTX.lineWidth   = Math.max(8, W * 0.012); // Nét dày hơn để giống ngón tay thật
 
   for (const [a, b] of HAND_CONNECTIONS) {
     CTX.beginPath();
@@ -434,102 +348,33 @@ function drawNeonHand(lm, W, H, handIndex) {
     CTX.stroke();
   }
 
-  CTX.shadowBlur = 10;
-  CTX.fillStyle  = "#ffffff";
+  // 3. Vẽ viền sáng bên trong (Inner Highlight) để tạo độ chân thực
+  CTX.strokeStyle = `hsla(${hue}, 100%, 90%, 0.4)`;
+  CTX.lineWidth   = Math.max(2, W * 0.003);
+  for (const [a, b] of HAND_CONNECTIONS) {
+    CTX.beginPath();
+    CTX.moveTo(P[a].x, P[a].y);
+    CTX.lineTo(P[b].x, P[b].y);
+    CTX.stroke();
+  }
+
+  // 4. Vẽ các khớp (Joints) - Nhỏ và tinh tế
+  CTX.fillStyle = "#ffffff";
   for (let i = 0; i < P.length; i++) {
     const isTip = TIP_IDX.includes(i);
-    const r = isTip ? Math.max(6, W * 0.010) : Math.max(4, W * 0.006);
+    const r = isTip ? Math.max(5, W * 0.008) : Math.max(3, W * 0.004);
     CTX.beginPath();
     CTX.arc(P[i].x, P[i].y, r, 0, Math.PI * 2);
     CTX.fill();
   }
 
-  CTX.shadowBlur = 25;
-  CTX.fillStyle  = `hsla(${hue}, 100%, 75%, 1)`;
+  // 5. Đầu ngón phát sáng (Fingertips Glow) - Nhấp nháy nhẹ
+  const pulse = 1 + Math.sin(performance.now() * 0.005) * 0.2;
+  CTX.fillStyle = `hsla(${hue}, 100%, 85%, 1)`;
   for (const i of TIP_IDX) {
     CTX.beginPath();
-    CTX.arc(P[i].x, P[i].y, Math.max(8, W * 0.014), 0, Math.PI * 2);
+    CTX.arc(P[i].x, P[i].y, Math.max(7, W * 0.012) * pulse, 0, Math.PI * 2);
     CTX.fill();
-    
-    // Hạt năng lượng (chấm tròn nhỏ)
-    if (Math.random() > 0.6) {
-        particles.push({
-            x: P[i].x, y: P[i].y,
-            vx: (Math.random() - 0.5) * 4,
-            vy: (Math.random() - 0.5) * 4,
-            life: 1.0,
-            color: `hsla(${hue}, 100%, 70%, `
-        });
-    }
-
-    // Ký hiệu lấp lánh tự động (tỉ lệ thấp)
-    if (Math.random() > 0.93) {
-        spawnSymbol(P[i].x, P[i].y, 'SPARKLE', 1);
-    }
-  }
-  CTX.shadowBlur = 0;
-}
-
-/* ================== XỬ LÝ HẠT ================== */
-function updateAndDrawParticles(W, H) {
-    // Hạt năng lượng (chấm tròn)
-    for (let i = particles.length - 1; i >= 0; i--) {
-        const p = particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.life -= 0.02; 
-        
-        if (p.life <= 0) {
-            particles.splice(i, 1);
-            continue;
-        }
-
-        CTX.beginPath();
-        CTX.arc(p.x, p.y, 2 * p.life, 0, Math.PI * 2);
-        CTX.fillStyle = p.color + p.life + ')';
-        CTX.fill();
-    }
-
-    // Hạt ký hiệu (emoji)
-    for (let i = symbolParticles.length - 1; i >= 0; i--) {
-        const s = symbolParticles[i];
-        s.x += s.vx;
-        s.y += s.vy;
-        s.vy += 0.05; // Trọng lực nhẹ
-        s.vx *= 0.98; // Ma sát
-        s.rotation += s.rotSpeed;
-        s.life -= s.decay;
-
-        if (s.life <= 0) {
-            symbolParticles.splice(i, 1);
-            continue;
-        }
-
-        CTX.save();
-        CTX.globalAlpha = Math.min(1, s.life * 2);
-        CTX.translate(s.x, s.y);
-        CTX.rotate(s.rotation);
-        CTX.font = `${s.size * s.life}px serif`;
-        CTX.textAlign = 'center';
-        CTX.textBaseline = 'middle';
-        CTX.fillText(s.symbol, 0, 0);
-        CTX.restore();
-    }
-}
-
-/* ================== HIỆU ỨNG ================== */
-function spawnConfetti() {
-  const colors = ['#f72585', '#b5179e', '#7209b7', '#560bad', '#480ca8', '#3a0ca3', '#3f37c9', '#4361ee', '#4895ef', '#4cc9f0'];
-  for (let i = 0; i < 20; i++) {
-    const c = document.createElement('div');
-    c.className = 'confetti';
-    c.style.left = Math.random() * 100 + 'vw';
-    c.style.background = colors[Math.floor(Math.random() * colors.length)];
-    c.style.width = c.style.height = (Math.random() * 8 + 4) + 'px';
-    c.style.animationDuration = (1.5 + Math.random() * 2) + 's';
-    c.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-    document.body.appendChild(c);
-    setTimeout(() => c.remove(), 3500);
   }
 }
 
