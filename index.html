@@ -23,8 +23,9 @@
         
         #stage {
             position: relative;
-            width: min(98vw, calc(98vh * 4 / 3));
-            aspect-ratio: 4 / 3;
+            --ar: 4 / 3; /* tỉ lệ thật của camera, JS sẽ cập nhật lại khi có dữ liệu video */
+            width: min(98vw, calc(98vh * var(--ar)));
+            aspect-ratio: var(--ar);
             max-width: 98vw;
             max-height: 98vh;
             border-radius: 14px;
@@ -32,7 +33,13 @@
             background: #000;
             box-shadow: 0 15px 50px rgba(0,0,0,.8), 0 0 0 1px rgba(76,201,240,0.25);
         }
-        #stage:fullscreen { width: 100vw; height: 100vh; aspect-ratio: auto; border-radius: 0; }
+        #stage:fullscreen {
+            width: min(100vw, calc(100vh * var(--ar)));
+            max-width: 100vw;
+            max-height: 100vh;
+            border-radius: 0;
+            box-shadow: none;
+        }
         
         #video, #canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
         #video { object-fit: cover; transform: scaleX(-1); opacity: .3; transition: opacity .25s; }
@@ -180,7 +187,10 @@ function resizeCanvas() {
   const h = VIDEO.videoHeight || 360;
   CANVAS.width  = w;
   CANVAS.height = h;
-  STAGE.style.aspectRatio = `${w} / ${h}`;
+  // Cập nhật biến CSS --ar (không set trực tiếp aspect-ratio) để cả 2 chế độ
+  // bình thường lẫn toàn màn hình đều tự tính đúng theo tỉ lệ camera thật,
+  // tránh bị trình duyệt kéo giãn méo hình khi vào fullscreen.
+  STAGE.style.setProperty('--ar', `${w} / ${h}`);
 }
 
 /* ================== VÒNG LẶP ================== */
