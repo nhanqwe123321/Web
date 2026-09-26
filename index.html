@@ -1,411 +1,2243 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bàn tay ảo chân thực - Mượt</title>
-    <style>
-        :root { --accent: #4cc9f0; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        html, body { height: 100%; margin: 0; }
-        
-        body {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            gap: 10px; padding: 8px;
-            background: radial-gradient(circle at 50% 0%, #0d1117, #000 80%);
-            color: #e8eefc; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-            overflow: hidden;
-            width: 100vw; height: 100vh;
-        }
-        
-        h1 { margin: 0; font-size: 15px; font-weight: 600; opacity: .85; letter-spacing: .5px;
-             text-shadow: 0 0 10px rgba(76,201,240,0.5); }
-        
-        #stage {
-            position: relative;
-            --ar: 4 / 3; /* tỉ lệ thật của camera, JS sẽ cập nhật lại khi có dữ liệu video */
-            width: min(98vw, calc(98vh * var(--ar)));
-            aspect-ratio: var(--ar);
-            max-width: 98vw;
-            max-height: 98vh;
-            border-radius: 14px;
-            overflow: hidden;
-            background: #000;
-            box-shadow: 0 15px 50px rgba(0,0,0,.8), 0 0 0 1px rgba(76,201,240,0.25);
-        }
-        #stage:fullscreen {
-            width: min(100vw, calc(100vh * var(--ar)));
-            max-width: 100vw;
-            max-height: 100vh;
-            border-radius: 0;
-            box-shadow: none;
-        }
-        
-        #video, #canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-        #video { object-fit: cover; transform: scaleX(-1); opacity: .3; transition: opacity .25s; }
-        #stage.no-video #video { opacity: 0; }
-        #canvas { pointer-events: none; }
-        
-        #ui-overlay {
-            position: absolute; top: 10px; left: 10px; z-index: 10;
-            background: rgba(0,0,0,.7); padding: 8px 14px; border-radius: 10px;
-            font-size: 13px; backdrop-filter: blur(6px);
-            border: 1px solid rgba(76,201,240,0.3);
-        }
-        #finger-info { font-weight: bold; color: #4cc9f0; font-size: 1.1em; }
-        
-        #status {
-            position: absolute; left: 10px; bottom: 10px; padding: 5px 10px;
-            font-size: 11px; border-radius: 6px; color: #9fb3d1;
-            background: rgba(0,0,0,.6); backdrop-filter: blur(6px); z-index: 10;
-            border: 1px solid rgba(76,201,240,0.2);
-        }
-        
-        .toolbar { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-        button {
-            padding: 8px 16px; font-size: 13px; color: #e8eefc; background: rgba(76,201,240,.1);
-            border: 1px solid rgba(76,201,240,.3); border-radius: 999px; cursor: pointer; transition: .2s;
-        }
-        button:hover { background: rgba(76,201,240,.25); }
-        button.active { background: rgba(76,201,240,.3); border-color: var(--accent); }
-        
-        #hint { margin: 0; font-size: 11px; text-align: center; color: #8ea2c0; max-width: 90vw; }
-        
-        @media (max-height: 500px) {
-            h1 { font-size: 12px; }
-            #hint { display: none; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cửa Hàng Tiện Ích</title>
+<style>
+:root {
+    --bg-body: #0a0e17;
+    --bg-card: #131a26;
+    --bg-input: #1f2937;
+    --border-color: #21262d;
+    --border-hover: #30363d;
+    --text-main: #c9d1d9;
+    --text-white: #fff;
+    --text-muted: #8b949e;
+    --blue: #3b82f6;
+    --blue-hover: #2563eb;
+    --green: #00ff88;
+    --orange: #fbbf24;
+    --danger: #f87171;
+    --purple: #a855f7;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+
+body {
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    min-height: 100vh;
+    padding: 20px 16px;
+    line-height: 1.5;
+    overflow-x: hidden;
+}
+
+/* ================= WELCOME SCREEN ================= */
+.welcome-overlay {
+    position: fixed;
+    inset: 0;
+    background: #060a12;
+    z-index: 99999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    overflow: hidden;
+    transition: opacity .5s ease .1s, visibility .5s ease .1s;
+}
+
+.welcome-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+/* ============ INTRO 1: CYBER GLITCH (Vào trang) ============ */
+.intro-launch {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 5;
+    background: #060a12;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.glitch-rgb {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 0, 64, 0.18) 0%,
+        transparent 30%,
+        transparent 70%,
+        rgba(0, 255, 255, 0.18) 100%
+    );
+    mix-blend-mode: screen;
+    animation: rgbShift 2s ease-out forwards;
+}
+
+@keyframes rgbShift {
+    0%   { opacity: 0; transform: translateX(-25px) skewX(-3deg); }
+    15%  { opacity: 1; transform: translateX(0) skewX(0); }
+    25%  { transform: translateX(10px) skewX(2deg); }
+    35%  { transform: translateX(-8px) skewX(-2deg); }
+    45%  { transform: translateX(5px) skewX(1deg); }
+    55%  { transform: translateX(-3px) skewX(0); }
+    70%  { transform: translateX(0) skewX(0); }
+    85%  { opacity: 1; transform: translateX(0) skewX(0); }
+    100% { opacity: 0; transform: translateX(0) skewX(0); }
+}
+
+.glitch-scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0) 0px,
+        rgba(0, 0, 0, 0) 2px,
+        rgba(96, 165, 250, 0.12) 3px,
+        rgba(96, 165, 250, 0.12) 4px
+    );
+    animation: scanFlicker 0.08s infinite;
+    pointer-events: none;
+}
+
+@keyframes scanFlicker {
+    0%, 100% { opacity: 0.5; transform: translateY(0); }
+    50%      { opacity: 0.8; transform: translateY(-1px); }
+}
+
+.glitch-bar {
+    position: absolute;
+    left: 0; right: 0;
+    height: 6px;
+    opacity: 0;
+    animation: glitchSlide 2s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+    box-shadow: 0 0 15px currentColor, 0 0 30px currentColor;
+}
+
+.glitch-bar.gb1 { top: 15%; color: #60a5fa; background: linear-gradient(90deg, transparent, #60a5fa, #a855f7, #60a5fa, transparent); animation-delay: 0.25s; }
+.glitch-bar.gb2 { top: 38%; color: #00ff88; background: linear-gradient(90deg, transparent, #00ff88, #60a5fa, #00ff88, transparent); animation-delay: 0.45s; height: 8px; }
+.glitch-bar.gb3 { top: 58%; color: #f472b6; background: linear-gradient(90deg, transparent, #f472b6, #a855f7, #f472b6, transparent); animation-delay: 0.65s; }
+.glitch-bar.gb4 { top: 28%; color: #fbbf24; background: linear-gradient(90deg, transparent, #fbbf24, #f472b6, #fbbf24, transparent); animation-delay: 0.85s; height: 4px; }
+.glitch-bar.gb5 { top: 78%; color: #a855f7; background: linear-gradient(90deg, transparent, #a855f7, #60a5fa, #a855f7, transparent); animation-delay: 1.05s; height: 10px; }
+
+@keyframes glitchSlide {
+    0%   { opacity: 0; transform: translateX(-100%) scaleX(0.2); }
+    15%  { opacity: 1; transform: translateX(0) scaleX(1); }
+    35%  { opacity: 1; transform: translateX(0) scaleX(1); }
+    50%  { transform: translateX(0) scaleX(0.7); }
+    65%  { opacity: 1; transform: translateX(0) scaleX(1); }
+    85%  { opacity: 0.5; transform: translateX(0) scaleX(0.4); }
+    100% { opacity: 0; transform: translateX(100%) scaleX(0); }
+}
+
+.glitch-hex {
+    position: relative;
+    z-index: 3;
+    font-size: 5rem;
+    font-weight: 900;
+    color: #00ff88;
+    text-shadow:
+        3px 0 #ff0040,
+        -3px 0 #00ffff,
+        0 0 20px #00ff88,
+        0 0 40px #00ff88;
+    opacity: 0;
+    animation: hexGlitch 2s ease-out forwards;
+}
+
+@keyframes hexGlitch {
+    0%   { opacity: 0; transform: scale(0.5); }
+    15%  { opacity: 1; transform: scale(1.05); }
+    20%  { transform: scale(1) translate(-8px, 2px) skewX(8deg); text-shadow: 6px 0 #ff0040, -6px 0 #00ffff, 0 0 20px #00ff88; }
+    25%  { transform: scale(1) translate(6px, -3px) skewX(-6deg); }
+    30%  { transform: scale(1) translate(-3px, 1px) skewX(3deg); }
+    35%  { transform: scale(1) translate(0, 0) skewX(0); text-shadow: 3px 0 #ff0040, -3px 0 #00ffff, 0 0 20px #00ff88, 0 0 40px #00ff88; }
+    60%  { opacity: 1; transform: scale(1); }
+    75%  { opacity: 0.7; transform: scale(1.15); text-shadow: 8px 0 #ff0040, -8px 0 #00ffff, 0 0 40px #fff; }
+    100% { opacity: 0; transform: scale(2.5); text-shadow: 0 0 0 transparent; }
+}
+
+.glitch-dot {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #fff;
+    box-shadow: 0 0 8px #fff, 0 0 16px #60a5fa;
+    opacity: 0;
+    animation: dotFlash 0.15s infinite;
+}
+
+.glitch-dot.gd1 { top: 10%; left: 12%; animation-delay: 0s; }
+.glitch-dot.gd2 { top: 25%; left: 88%; animation-delay: 0.05s; }
+.glitch-dot.gd3 { top: 70%; left: 8%; animation-delay: 0.1s; }
+.glitch-dot.gd4 { top: 85%; left: 92%; animation-delay: 0.15s; }
+.glitch-dot.gd5 { top: 45%; left: 5%; animation-delay: 0.02s; }
+.glitch-dot.gd6 { top: 55%; left: 95%; animation-delay: 0.08s; }
+.glitch-dot.gd7 { top: 20%; left: 50%; animation-delay: 0.12s; }
+.glitch-dot.gd8 { top: 80%; left: 45%; animation-delay: 0.04s; }
+
+@keyframes dotFlash {
+    0%, 100% { opacity: 0; transform: scale(0.5); }
+    50%      { opacity: 1; transform: scale(1.5); }
+}
+
+.glitch-flash {
+    position: absolute;
+    inset: 0;
+    background: #fff;
+    opacity: 0;
+    z-index: 10;
+    animation: glitchFlash 2s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes glitchFlash {
+    0%, 68% { opacity: 0; }
+    73%     { opacity: 0.95; }
+    78%     { opacity: 0.6; }
+    85%     { opacity: 0.15; }
+    100%    { opacity: 0; }
+}
+
+/* ============ INTRO 2: ENERGY PULSE (Khi đăng nhập) ============ */
+.intro-login {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 6;
+    display: none;
+    background: #02060c;
+}
+
+.intro-login.active { display: flex; }
+
+.energy-canvas {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.energy-flash {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, #fff 0%, #00ffc8 25%, #a855f7 50%, transparent 75%);
+    opacity: 0;
+    animation: energyFlash 2.4s ease-out forwards;
+    z-index: 2;
+    pointer-events: none;
+}
+
+@keyframes energyFlash {
+    0%, 75% { opacity: 0; }
+    85%     { opacity: 0.9; }
+    92%     { opacity: 0.3; }
+    100%    { opacity: 0; }
+}
+
+/* Welcome box */
+.welcome-box {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 460px;
+    background: rgba(19, 26, 38, 0.7);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-radius: 24px;
+    padding: 36px 28px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    text-align: center;
+    opacity: 0;
+    animation: welcomeFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.4s forwards;
+    overflow: hidden;
+    transform-origin: center center;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+@keyframes welcomeFadeIn {
+    from { opacity: 0; transform: translateY(30px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.welcome-box.fade-out-mode {
+    opacity: 0 !important;
+    transform: scale(0.85) translateY(20px) !important;
+    animation: none !important;
+    pointer-events: none;
+}
+
+.welcome-overlay.hidden .welcome-box:not(.fade-out-mode) { animation: none; }
+
+.welcome-logo-wrap {
+    position: relative;
+    width: 80px; height: 80px;
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.welcome-logo-glow {
+    position: absolute;
+    inset: 0;
+    border-radius: 22px;
+    background: conic-gradient(from 0deg, #00ff88, #2563eb, #a855f7, #00ff88);
+    filter: blur(16px);
+    opacity: 0.6;
+    animation: rotate 6s linear infinite;
+}
+
+@keyframes rotate { to { transform: rotate(360deg); } }
+
+.welcome-logo {
+    position: relative;
+    width: 80px; height: 80px;
+    background: linear-gradient(135deg, #131a26, #0d1117);
+    border-radius: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #00ff88;
+    font-size: 2.2rem;
+    font-weight: bold;
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+}
+
+.welcome-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.3px;
+}
+
+.welcome-subtitle {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 18px;
+}
+
+/* ================= TUG SCENE ================= */
+.tug-scene {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 6px;
+    padding: 4px 0;
+    overflow: hidden;
+}
+
+.tug-scene.hidden { display: none; }
+
+.pull-line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+    width: 100%;
+}
+
+.pull-line-1 { animation: slideInLeft 1.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+.pull-line-2 {
+    opacity: 0;
+    animation: slideInRight 1.3s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s forwards;
+}
+
+@keyframes slideInLeft {
+    0% { transform: translateX(-130vw); opacity: 0; }
+    40% { opacity: 1; }
+    100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInRight {
+    0% { transform: translateX(130vw); opacity: 0; }
+    40% { opacity: 1; }
+    100% { transform: translateX(0); opacity: 1; }
+}
+
+.puller {
+    flex-shrink: 0;
+    width: 42px;
+    height: 72px;
+    position: relative;
+    transform-origin: bottom center;
+}
+
+.pull-line-1 .puller { animation: tugLeft 1.3s ease-in-out 1.4s infinite alternate; }
+.pull-line-2 .puller { animation: tugRight 1.3s ease-in-out 1.6s infinite alternate; }
+
+@keyframes tugLeft {
+    0% { transform: translateX(0) rotate(0deg) scale(1); }
+    100% { transform: translateX(-3px) rotate(-3deg) scale(0.98); }
+}
+
+@keyframes tugRight {
+    0% { transform: translateX(0) rotate(0deg) scale(1); }
+    100% { transform: translateX(3px) rotate(3deg) scale(0.98); }
+}
+
+.stick-svg {
+    width: 42px;
+    height: 72px;
+    overflow: visible;
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5));
+}
+
+.pull-line-1 .stick-svg { color: #60a5fa; }
+.pull-line-2 .stick-svg { color: #c084fc; }
+
+.sweat {
+    position: absolute;
+    top: -4px;
+    font-size: 0.75rem;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.pull-line-1 .sweat { right: 2px; animation: sweatDrop 1.3s infinite; }
+.pull-line-2 .sweat { left: 2px; animation: sweatDrop 1.3s 0.65s infinite; }
+
+@keyframes sweatDrop {
+    0%, 55% { opacity: 0; transform: translateY(0) scale(0.8); }
+    65% { opacity: 1; transform: translateY(-2px) scale(1.1); }
+    100% { opacity: 0; transform: translateY(-12px) scale(0.6); }
+}
+
+.puller::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 26px;
+    height: 4px;
+    background: rgba(148, 163, 184, 0.35);
+    border-radius: 50%;
+    filter: blur(3px);
+    animation: dustPuff 1.3s infinite;
+}
+
+@keyframes dustPuff {
+    0%, 100% { opacity: 0.3; transform: translateX(-50%) scaleX(1); }
+    50% { opacity: 0.7; transform: translateX(-50%) scaleX(1.5); }
+}
+
+.rope-segment {
+    flex: 0 0 18px;
+    height: 6px;
+    background: repeating-linear-gradient(
+        90deg,
+        #8b5a2b 0px, #8b5a2b 4px,
+        #a0522d 4px, #a0522d 8px,
+        #6b4423 8px, #6b4423 12px
+    );
+    border-radius: 3px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -1px 2px rgba(0, 0, 0, 0.3);
+    animation: ropePulse 1.3s infinite ease-in-out alternate;
+}
+
+@keyframes ropePulse {
+    0% { transform: scaleY(1); }
+    100% { transform: scaleY(1.3); }
+}
+
+.choice-btn {
+    position: relative;
+    flex: 1;
+    padding: 12px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    background: rgba(19, 26, 38, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-align: left;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+    font-family: inherit;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    min-width: 0;
+}
+
+.choice-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 0;
+}
+
+.choice-btn.guest::before { background: linear-gradient(135deg, rgba(37, 99, 235, 0.18), rgba(37, 99, 235, 0.05)); }
+.choice-btn.admin::before { background: linear-gradient(135deg, rgba(168, 85, 247, 0.18), rgba(168, 85, 247, 0.05)); }
+.choice-btn:hover::before { opacity: 1; }
+
+.choice-btn:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
+}
+
+.choice-btn:active { transform: translateY(0); }
+
+.btn-icon-wrap {
+    position: relative;
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    z-index: 1;
+    transition: transform 0.3s;
+}
+
+.choice-btn.guest .btn-icon-wrap {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    box-shadow: 0 5px 14px rgba(37, 99, 235, 0.4);
+}
+
+.choice-btn.admin .btn-icon-wrap {
+    background: linear-gradient(135deg, #a855f7, #7c3aed);
+    box-shadow: 0 5px 14px rgba(168, 85, 247, 0.4);
+}
+
+.choice-btn:hover .btn-icon-wrap { transform: scale(1.08) rotate(-5deg); }
+
+.btn-icon { font-size: 1.15rem; line-height: 1; }
+
+.btn-text { flex: 1; display: flex; flex-direction: column; gap: 1px; z-index: 1; min-width: 0; }
+
+.btn-label { font-size: 0.82rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.btn-desc { font-size: 0.62rem; color: var(--text-muted); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.btn-arrow {
+    font-size: 1rem;
+    color: var(--text-muted);
+    transition: all 0.3s;
+    z-index: 1;
+    flex-shrink: 0;
+}
+
+.choice-btn:hover .btn-arrow { color: #fff; transform: translateX(3px); }
+
+/* Admin Password Form */
+.admin-pwd-form { display: none; text-align: left; margin-top: 8px; }
+.admin-pwd-form.show { display: block; animation: formEntry 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+
+@keyframes formEntry {
+    from { opacity: 0; transform: translateY(-15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.pwd-header { text-align: center; margin-bottom: 20px; }
+
+.pwd-icon {
+    font-size: 2.2rem;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 0 15px rgba(168, 85, 247, 0.6));
+    animation: pulseIcon 2s infinite ease-in-out;
+}
+
+@keyframes pulseIcon {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+}
+
+.pwd-title { font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 4px; }
+.pwd-subtitle { font-size: 0.75rem; color: var(--text-muted); }
+
+.password-input-wrapper {
+    display: flex;
+    align-items: center;
+    background: rgba(13, 17, 23, 0.8);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 14px;
+    padding: 0 16px;
+    margin-bottom: 12px;
+    transition: all 0.3s;
+}
+
+.password-input-wrapper:focus-within {
+    border-color: #a855f7;
+    box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.15);
+    background: rgba(13, 17, 23, 1);
+}
+
+.lock-icon { font-size: 1.1rem; color: var(--purple); margin-right: 12px; }
+
+.password-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 0.95rem;
+    padding: 16px 0;
+    outline: none;
+    font-family: inherit;
+}
+
+.password-input::placeholder { color: var(--text-muted); }
+
+.eye-icon { font-size: 1.1rem; color: var(--purple); cursor: pointer; padding: 8px; user-select: none; transition: transform 0.2s; }
+.eye-icon:hover { transform: scale(1.15); }
+
+.password-error {
+    color: var(--danger);
+    font-size: 0.8rem;
+    margin-bottom: 12px;
+    display: none;
+    text-align: center;
+    padding: 8px 12px;
+    background: rgba(248, 113, 113, 0.1);
+    border: 1px solid rgba(248, 113, 113, 0.3);
+    border-radius: 8px;
+}
+
+.password-error.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    animation: shake 0.4s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+}
+
+.password-submit {
+    position: relative;
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #a855f7, #7c3aed);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s;
+    box-shadow: 0 8px 25px rgba(168, 85, 247, 0.35);
+    font-family: inherit;
+}
+
+.password-submit:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(168, 85, 247, 0.5); }
+.submit-arrow { transition: transform 0.3s; }
+.password-submit:hover .submit-arrow { transform: translateX(4px); }
+
+.back-btn {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-family: inherit;
+}
+
+.back-btn:hover { background: rgba(255, 255, 255, 0.05); color: #fff; border-color: rgba(255, 255, 255, 0.15); }
+
+/* ================= SHOP ================= */
+.shop-container { width: 100%; max-width: 900px; margin: 0 auto; }
+
+.top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+.header-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+.logo-icon {
+    width: 36px; height: 36px;
+    background: var(--bg-input);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--green);
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.brand-info p { font-size: .85rem; color: var(--blue); font-weight: bold; }
+
+.product-count-badge {
+    background: #1e3a5f;
+    color: #60a5fa;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: .8rem;
+    font-weight: bold;
+}
+
+.admin-badge {
+    background: linear-gradient(135deg, #a855f7, #7c3aed);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: .7rem;
+    font-weight: bold;
+    display: none;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.admin-badge.show { display: inline-block; }
+
+.header-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+.admin-btn {
+    background: var(--purple);
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: .8rem;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    gap: 6px;
+    transition: .2s;
+}
+
+.admin-btn.show { display: flex; }
+.admin-btn:hover { background: #9333ea; }
+
+.header-logout-btn {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid var(--danger);
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: .8rem;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    gap: 6px;
+    transition: .2s;
+}
+
+.header-logout-btn.show { display: flex; }
+.header-logout-btn:hover { background: var(--danger); color: #fff; }
+
+.sub-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding: 0 4px; }
+.sub-header-left { display: flex; align-items: center; gap: 12px; }
+
+.category-select {
+    background: var(--bg-card);
+    color: var(--text-main);
+    border: 1px solid var(--border-hover);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: .85rem;
+    outline: none;
+    cursor: pointer;
+}
+
+.collapse-btn {
+    background: var(--bg-card);
+    color: var(--text-main);
+    border: 1px solid var(--border-hover);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: .85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.collapse-btn:hover { background: var(--bg-input); }
+
+.product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+@media (min-width: 768px) {
+    .product-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+}
+
+.product-card {
+    background: var(--bg-card);
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+    will-change: transform;
+}
+
+.product-card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.35);
+}
+
+.product-card:active,
+.product-card.touched {
+    transform: translateY(-4px) scale(1.04);
+    border-color: var(--green);
+    box-shadow: 0 10px 24px rgba(0, 255, 136, 0.25), 0 6px 14px rgba(0, 0, 0, 0.4);
+    transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+
+.admin-card-actions { position: absolute; top: 8px; right: 8px; z-index: 5; display: none; gap: 6px; }
+.admin-card-actions.show { display: flex; }
+
+.admin-card-actions button {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-size: .9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: .2s;
+}
+
+.btn-edit { background: var(--blue); color: #fff; }
+.btn-edit:hover { background: var(--blue-hover); transform: scale(1.1); }
+.btn-delete { background: var(--danger); color: #fff; }
+.btn-delete:hover { background: #dc2626; transform: scale(1.1); }
+
+.card-image {
+    background: #0d1117;
+    padding: 20px 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    min-height: 120px;
+    overflow: hidden;
+}
+
+.card-image img {
+    max-width: 100%;
+    max-height: 150px;
+    object-fit: contain;
+    border-radius: 8px;
+    cursor: zoom-in;
+    transition: transform .2s ease;
+}
+
+.card-image img:hover {
+    transform: scale(1.05);
+}
+
+.badge {
+    position: absolute;
+    top: 10px; left: 10px;
+    background: #78350f;
+    color: var(--orange);
+    font-size: .55rem;
+    font-weight: bold;
+    padding: 3px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    z-index: 2;
+}
+
+.freefire-icon {
+    width: 60px; height: 60px;
+    background: linear-gradient(135deg, #ff6b00, #ff0055);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    box-shadow: 0 0 20px rgba(255, 107, 0, .4);
+    transform: rotate(-5deg);
+}
+
+.card-content { padding: 12px; display: flex; flex-direction: column; flex: 1; }
+.card-category { color: var(--blue); font-size: .65rem; font-weight: bold; text-transform: uppercase; margin-bottom: 4px; }
+.card-title { color: var(--text-white); font-size: .85rem; font-weight: bold; margin-bottom: 8px; line-height: 1.3; }
+.card-meta { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+.card-meta span { color: var(--text-muted); font-size: .7rem; }
+.card-bottom { margin-top: auto; }
+.card-price { color: var(--green); font-size: .9rem; font-weight: bold; margin-bottom: 4px; }
+.card-stock { color: var(--text-muted); font-size: .7rem; margin-bottom: 10px; }
+
+.card-btn {
+    width: 100%;
+    padding: 8px;
+    background: var(--bg-input);
+    color: #e5e7eb;
+    border: 1px solid #374151;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: .75rem;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    transition: .2s;
+}
+
+.card-btn:hover { background: #374151; color: var(--text-white); }
+.card-btn.download { background: var(--blue-hover); color: #fff; border-color: var(--blue-hover); }
+.card-btn.download:hover { background: var(--blue); }
+.card-btn.view-image { background: linear-gradient(135deg, #7c3aed, #a855f7); color: #fff; border-color: #a855f7; }
+.card-btn.view-image:hover { background: linear-gradient(135deg, #6d28d9, #9333ea); transform: translateY(-1px); }
+.card-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ================= LIGHTBOX (Xem ảnh lớn) ================= */
+.lightbox-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.94);
+    z-index: 999999;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    cursor: zoom-out;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.lightbox-overlay.open {
+    display: flex;
+    opacity: 1;
+    animation: lightboxFadeIn 0.3s ease;
+}
+
+@keyframes lightboxFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.lightbox-img {
+    max-width: 95vw;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.9), 0 0 60px rgba(96, 165, 250, 0.3);
+    cursor: default;
+    animation: lightboxZoomIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+@keyframes lightboxZoomIn {
+    from { opacity: 0; transform: scale(0.7); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+.lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: all 0.2s;
+    z-index: 2;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    font-family: inherit;
+}
+
+.lightbox-close:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.1) rotate(90deg);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.lightbox-hint {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.8rem;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+/* ================= ADMIN PANEL ================= */
+.admin-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    padding: 16px;
+}
+
+.admin-overlay.open { display: flex; }
+
+.admin-panel {
+    background: var(--bg-card);
+    width: 100%;
+    max-width: 550px;
+    max-height: 90vh;
+    border-radius: 16px;
+    border: 1px solid var(--purple);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.admin-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, rgba(168, 85, 247, .15), transparent);
+}
+
+.admin-header h2 { color: var(--purple); font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
+
+.admin-body { padding: 20px 24px; overflow-y: auto; flex: 1; }
+
+.admin-section-title { font-size: .85rem; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; }
+
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: .75rem; color: var(--text-muted); margin-bottom: 6px; font-weight: bold; text-transform: uppercase; }
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px 12px;
+    background: #0d1117;
+    border: 1px solid var(--border-hover);
+    border-radius: 8px;
+    color: var(--text-white);
+    font-size: .9rem;
+    outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus { border-color: var(--purple); }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    background: var(--purple);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: .9rem;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.btn-primary:hover { background: #9333ea; }
+
+.image-upload-area { display: flex; gap: 12px; align-items: flex-start; }
+
+.image-preview {
+    width: 100px; height: 100px;
+    background: #0d1117;
+    border: 2px dashed var(--border-hover);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.image-preview img { width: 100%; height: 100%; object-fit: cover; }
+.image-preview .placeholder { font-size: 2rem; color: var(--text-muted); }
+
+.image-upload-controls { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+
+.image-upload-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 14px;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: .85rem;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.image-upload-btn:hover { background: var(--blue-hover); }
+
+.image-remove-btn {
+    padding: 8px 14px;
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid var(--danger);
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: .8rem;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.image-remove-btn:hover { background: var(--danger); color: #fff; }
+
+.image-hint { font-size: .7rem; color: var(--text-muted); margin-top: 4px; }
+
+input[type="file"] { display: none; }
+
+.admin-product-list { margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 16px; }
+.admin-product-list h3 { font-size: .85rem; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; }
+
+.admin-product-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: #0d1117;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.admin-product-item .thumb { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; margin-right: 10px; background: #1f2937; flex-shrink: 0; }
+.admin-product-item .info { font-size: .8rem; flex: 1; display: flex; align-items: center; }
+.admin-product-item .info strong { color: var(--text-white); display: block; }
+.admin-product-item .info span { color: var(--text-muted); font-size: .7rem; display: block; }
+.admin-product-item .actions { display: flex; gap: 6px; }
+.admin-product-item .actions button { width: 28px; height: 28px; border-radius: 6px; border: none; cursor: pointer; font-size: .85rem; }
+
+.logout-btn {
+    background: var(--danger);
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: .8rem;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.logout-btn:hover { background: #dc2626; }
+
+.export-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--green);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: .9rem;
+    cursor: pointer;
+    margin-top: 12px;
+}
+
+.export-btn:hover { background: #00cc6a; }
+
+.support-widget { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 9999; }
+
+.support-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all .3s ease;
+}
+
+.support-options.show { opacity: 1; visibility: visible; transform: translateY(0); }
+
+.support-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 25px;
+    text-decoration: none;
+    color: #fff;
+    font-weight: bold;
+    font-size: .85rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, .4);
+    transition: transform .2s;
+    min-width: 120px;
+}
+
+.support-btn:hover { transform: scale(1.05); }
+.zalo-btn { background: #0068FF; }
+.zalo-btn:hover { background: #0055cc; }
+
+.support-toggle {
+    width: 55px; height: 55px;
+    border-radius: 50%;
+    background: var(--blue-hover);
+    color: #fff;
+    border: none;
+    font-size: 1.6rem;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(37, 99, 235, .5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .3s ease;
+}
+
+.support-toggle:hover { background: var(--blue); transform: scale(1.1); }
+.support-toggle.active { transform: rotate(45deg); background: #1e40af; }
+
+/* Responsive */
+@media (max-width: 480px) {
+    .welcome-box { padding: 30px 20px; }
+    .welcome-logo, .welcome-logo-wrap { width: 68px; height: 68px; }
+    .welcome-logo { font-size: 1.9rem; }
+    .welcome-title { font-size: 1.25rem; }
+    .puller { width: 36px; height: 62px; }
+    .stick-svg { width: 36px; height: 62px; }
+    .rope-segment { flex: 0 0 14px; height: 5px; }
+    .choice-btn { padding: 10px 10px; gap: 8px; }
+    .btn-icon-wrap { width: 32px; height: 32px; }
+    .btn-icon { font-size: 1rem; }
+    .btn-label { font-size: 0.75rem; }
+    .btn-desc { display: none; }
+    .glitch-hex { font-size: 3.5rem; }
+    .glitch-bar { height: 4px; }
+    .glitch-bar.gb2, .glitch-bar.gb5 { height: 6px; }
+    .lightbox-close { width: 40px; height: 40px; font-size: 1.6rem; top: 12px; right: 12px; }
+    .lightbox-hint { font-size: 0.7rem; }
+}
+</style>
 </head>
 <body>
 
-    <h1>🖐️ Bàn tay ảo chân thực</h1>
+<!-- ================= WELCOME SCREEN ================= -->
+<div class="welcome-overlay" id="welcomeOverlay">
+    <div class="bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
 
-    <div id="stage">
-        <video id="video" playsinline muted autoplay></video>
-        <canvas id="canvas"></canvas>
-        
-        <div id="ui-overlay">
-            <div id="finger-info">✋ Số ngón: -</div>
+    <!-- INTRO 1: Cyber Glitch -->
+    <div class="intro-launch" id="introLaunch">
+        <div class="glitch-rgb"></div>
+        <div class="glitch-scanlines"></div>
+
+        <div class="glitch-bar gb1"></div>
+        <div class="glitch-bar gb2"></div>
+        <div class="glitch-bar gb3"></div>
+        <div class="glitch-bar gb4"></div>
+        <div class="glitch-bar gb5"></div>
+
+        <span class="glitch-dot gd1"></span>
+        <span class="glitch-dot gd2"></span>
+        <span class="glitch-dot gd3"></span>
+        <span class="glitch-dot gd4"></span>
+        <span class="glitch-dot gd5"></span>
+        <span class="glitch-dot gd6"></span>
+        <span class="glitch-dot gd7"></span>
+        <span class="glitch-dot gd8"></span>
+
+        <div class="glitch-hex">⬡</div>
+
+        <div class="glitch-flash"></div>
+    </div>
+
+    <!-- INTRO 2: Energy Pulse -->
+    <div class="intro-login" id="introLogin">
+        <canvas class="energy-canvas" id="energyCanvas"></canvas>
+        <div class="energy-flash"></div>
+    </div>
+
+    <!-- Welcome box -->
+    <div class="welcome-box" id="welcomeBox">
+        <div class="welcome-logo-wrap">
+            <div class="welcome-logo-glow"></div>
+            <div class="welcome-logo">⬡</div>
         </div>
-        <div id="status">Đang tải AI…</div>
+
+        <h1 class="welcome-title">Cửa Hàng Tiện Ích</h1>
+        <p class="welcome-subtitle">Chọn chế độ truy cập để tiếp tục</p>
+
+        <div class="tug-scene" id="tugScene">
+            <div class="pull-line pull-line-1">
+                <div class="puller">
+                    <svg class="stick-svg" viewBox="0 0 50 78" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="22" cy="13" r="8.5" fill="none" stroke="currentColor" stroke-width="2.8"/>
+                        <circle cx="19" cy="12" r="1.1" fill="currentColor"/>
+                        <circle cx="25" cy="12" r="1.1" fill="currentColor"/>
+                        <path d="M 19 17 Q 22 18 25 17" stroke="currentColor" stroke-width="1.4" fill="none"/>
+                        <line x1="22" y1="21" x2="22" y2="26" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="22" y1="26" x2="22" y2="50" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="22" y1="30" x2="48" y2="26" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="22" y1="30" x2="12" y2="42" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="22" y1="50" x2="8" y2="74" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="22" y1="50" x2="36" y2="74" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="8" y1="74" x2="3" y2="76" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="36" y1="74" x2="41" y2="76" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                    </svg>
+                    <span class="sweat">💦</span>
+                </div>
+                <div class="rope-segment"></div>
+                <button class="choice-btn guest" id="guestBtn">
+                    <span class="btn-icon-wrap"><span class="btn-icon">👤</span></span>
+                    <span class="btn-text">
+                        <span class="btn-label">Vào với tư cách Khách</span>
+                        <span class="btn-desc">Xem và tải sản phẩm miễn phí</span>
+                    </span>
+                    <span class="btn-arrow">→</span>
+                </button>
+            </div>
+
+            <div class="pull-line pull-line-2">
+                <button class="choice-btn admin" id="adminChoiceBtn">
+                    <span class="btn-icon-wrap"><span class="btn-icon">👑</span></span>
+                    <span class="btn-text">
+                        <span class="btn-label">Đăng nhập Admin</span>
+                        <span class="btn-desc">Quản lý sản phẩm &amp; hệ thống</span>
+                    </span>
+                    <span class="btn-arrow">→</span>
+                </button>
+                <div class="rope-segment"></div>
+                <div class="puller">
+                    <svg class="stick-svg" viewBox="0 0 50 78" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="28" cy="13" r="8.5" fill="none" stroke="currentColor" stroke-width="2.8"/>
+                        <circle cx="25" cy="12" r="1.1" fill="currentColor"/>
+                        <circle cx="31" cy="12" r="1.1" fill="currentColor"/>
+                        <path d="M 25 17 Q 28 18 31 17" stroke="currentColor" stroke-width="1.4" fill="none"/>
+                        <line x1="28" y1="21" x2="28" y2="26" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="28" y1="26" x2="28" y2="50" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="28" y1="30" x2="2" y2="26" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="28" y1="30" x2="38" y2="42" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="28" y1="50" x2="14" y2="74" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="28" y1="50" x2="42" y2="74" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="14" y1="74" x2="9" y2="76" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                        <line x1="42" y1="74" x2="47" y2="76" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+                    </svg>
+                    <span class="sweat">💦</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-pwd-form" id="adminPwdForm">
+            <div class="pwd-header">
+                <div class="pwd-icon">🔐</div>
+                <div class="pwd-title">Xác thực Admin</div>
+                <div class="pwd-subtitle">Nhập mật khẩu để tiếp tục</div>
+            </div>
+            <div class="password-input-wrapper">
+                <span class="lock-icon">🔒</span>
+                <input type="password" id="passwordInput" class="password-input" placeholder="Nhập mật khẩu..." autocomplete="off">
+                <span class="eye-icon" id="togglePassword">👁️</span>
+            </div>
+            <div class="password-error" id="passwordError">
+                <span>⚠️</span> Mật khẩu không đúng!
+            </div>
+            <button class="password-submit" id="passwordSubmit">
+                <span>Xác nhận</span>
+                <span class="submit-arrow">→</span>
+            </button>
+            <button class="back-btn" id="backBtn">
+                <span>←</span> Quay lại
+            </button>
+        </div>
     </div>
+</div>
 
-    <div class="toolbar">
-        <button id="btnVideo" class="active">Hiện video</button>
-        <button id="btnFullscreen">Toàn màn hình</button>
-    </div>
+<!-- ================= SHOP ================= -->
+<div id="shopSection" class="shop-container">
+<div class="top-header">
+<div class="header-left">
+<div class="logo-icon">⬡</div>
+<div class="brand-info"><p>Cửa hàng tiện ích</p></div>
+<span class="product-count-badge" id="productCountBadge">0 sản phẩm</span>
+<span class="admin-badge" id="adminBadge">👑 ADMIN</span>
+</div>
+<div class="header-right">
+<button class="admin-btn" id="adminPanelBtn">⚙️ Quản Trị</button>
+<button class="header-logout-btn" id="headerLogoutBtn">🚪 Đăng Xuất</button>
+</div>
+</div>
 
-    <p id="hint">Chạy trên <b>https</b> hoặc <b>localhost</b> để camera hoạt động</p>
+<div class="sub-header">
+<div class="sub-header-left">
+<select class="category-select" id="categoryFilter">
+<option value="all">Tất cả</option>
+<option value="GAME">GAME</option>
+<option value="AIMLOCK">AIMLOCK</option>
+<option value="TỐI ƯU">TỐI ƯU</option>
+</select>
+</div>
+<button class="collapse-btn">Thu gọn ▸</button>
+</div>
 
-<script type="module">
-import { HandLandmarker, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs";
+<main><div class="product-grid" id="productGrid"></div></main>
+</div>
 
-/* ================== CẤU HÌNH ================== */
-const VERSION   = "0.10.14";
-const WASM_PATH = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${VERSION}/wasm`;
-const MODEL_URL = "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task";
+<!-- ================= LIGHTBOX (Xem ảnh lớn) ================= -->
+<div class="lightbox-overlay" id="lightboxOverlay">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Đóng">×</button>
+    <img src="" alt="" class="lightbox-img" id="lightboxImg">
+    <div class="lightbox-hint">Nhấn ESC hoặc click ra ngoài để đóng</div>
+</div>
 
-const SMOOTHING = 0.88;
-const NUM_HANDS = 2;
+<!-- ================= ADMIN PANEL ================= -->
+<div class="admin-overlay" id="adminOverlay">
+<div class="admin-panel">
+<div class="admin-header">
+<h2>👑 Bảng Quản Trị</h2>
+<button class="close-btn" id="closeAdmin">×</button>
+</div>
+<div class="admin-body">
+<h3 class="admin-section-title">➕ Thêm / Sửa Sản Phẩm</h3>
+<input type="hidden" id="editId">
+<div class="form-row">
+<div class="form-group"><label>Tên sản phẩm</label><input type="text" id="pName" placeholder="VD: Aimlock Pro"></div>
+<div class="form-group"><label>Danh mục</label>
+<select id="pCategory"><option value="GAME">GAME</option><option value="AIMLOCK">AIMLOCK</option><option value="TỐI ƯU">TỐI ƯU</option></select>
+</div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>Thời hạn</label><input type="text" id="pDuration" value="MỚI NHẤT"></div>
+<div class="form-group"><label>Giá (VNĐ)</label><input type="number" id="pPrice" value="0"></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>Badge</label><input type="text" id="pBadge" placeholder="HOT / MỚI"></div>
+<div class="form-group"><label>Icon (nếu không có ảnh)</label>
+<select id="pImg"><option value="file">📁 File</option><option value="aim">🎯 Aim</option><option value="fire">🔥 Free Fire</option></select>
+</div>
+</div>
+<div class="form-group">
+<label>📷 Ảnh sản phẩm (tùy chọn)</label>
+<div class="image-upload-area">
+<div class="image-preview" id="imagePreview"><span class="placeholder">🖼️</span></div>
+<div class="image-upload-controls">
+<button type="button" class="image-upload-btn" id="pickImageBtn">📷 Chọn Ảnh Từ Máy</button>
+<button type="button" class="image-remove-btn" id="removeImageBtn" style="display:none">🗑️ Xóa Ảnh</button>
+<input type="file" id="imageInput" accept="image/*">
+<div class="image-hint">Ảnh lưu dạng Base64. Tối đa 20MB.<br>Khuyến nghị &lt; 2MB để trang nhanh.</div>
+</div>
+</div>
+</div>
+<div class="form-group"><label>Link tải</label><input type="text" id="pLink" placeholder="https://..."></div>
+<div class="form-group"><label>Nút hiển thị</label><input type="text" id="pLinkText" value="Tải Xuống"></div>
+<button class="btn-primary" id="saveProduct">💾 Lưu Sản Phẩm</button>
+<button class="export-btn" id="exportCodeBtn">📥 Xuất Code HTML (Lưu Vào Code)</button>
 
-/* ĐỘ DÀY TƯƠNG ĐỐI CỦA TỪNG ĐỐT XƯƠNG */
-const BONES = [
-  [0,1,1.0],[1,2,0.82],[2,3,0.66],[3,4,0.5],
-  [0,5,1.0],[5,6,0.82],[6,7,0.66],[7,8,0.5],
-  [5,9,0.95],[9,10,0.85],[10,11,0.68],[11,12,0.5],
-  [9,13,0.9],[13,14,0.78],[14,15,0.62],[15,16,0.46],
-  [13,17,0.82],[17,18,0.68],[18,19,0.52],[19,20,0.38],
-  [0,17,0.7]
-];
+<div class="admin-product-list">
+<h3>📋 Danh sách sản phẩm (<span id="adminProductCount">0</span>)</h3>
+<div id="adminProductList"></div>
+</div>
+<button class="logout-btn" id="logoutBtn">🔓 Đăng Xuất Admin</button>
+</div>
+</div>
+</div>
 
-const TIP_IDX = [4, 8, 12, 16, 20];
-const PIP_IDX = [2, 6, 10, 14, 18];
-const PALM_IDX = [0, 1, 5, 9, 13, 17];
+<!-- ================= SUPPORT ================= -->
+<div class="support-widget">
+<div class="support-options" id="supportOptions">
+<a href="https://zalo.me/0907415055" target="_blank" class="support-btn zalo-btn"><span>💬</span> Zalo</a>
+</div>
+<button class="support-toggle" id="supportToggle">💬</button>
+</div>
 
-/* ================== DOM ================== */
-const VIDEO  = document.getElementById("video");
-const CANVAS = document.getElementById("canvas");
-const CTX    = CANVAS.getContext("2d", { alpha: true });
-const STAGE  = document.getElementById("stage");
-const STATUS = document.getElementById("status");
-const BTN    = document.getElementById("btnVideo");
-const BTN_FS = document.getElementById("btnFullscreen");
-const FINGER_INFO = document.getElementById("finger-info");
+<script>
+// ==================== ADMIN PASSWORD ====================
+const PWD_ADMIN = "nhan";
 
-/* ================== TRẠNG THÁI ================== */
-let handLandmarker = null;
-let lastVideoTime  = -1;
-let smoothedHands  = [];
-let fpsCounter = 0, lastFpsTime = 0, currentFps = 0;
+const welcomeOverlay = document.getElementById('welcomeOverlay');
+const welcomeBox = document.getElementById('welcomeBox');
+const introLaunch = document.getElementById('introLaunch');
+const introLogin = document.getElementById('introLogin');
+const tugScene = document.getElementById('tugScene');
+const adminPwdForm = document.getElementById('adminPwdForm');
+const passwordInput = document.getElementById('passwordInput');
+const passwordSubmit = document.getElementById('passwordSubmit');
+const passwordError = document.getElementById('passwordError');
+const togglePassword = document.getElementById('togglePassword');
+const headerLogoutBtn = document.getElementById('headerLogoutBtn');
 
-/* ================== KHỞI TẠO ================== */
-async function init() {
-  try {
-    STATUS.textContent = "Đang tải mô hình AI…";
-    const vision = await FilesetResolver.forVisionTasks(WASM_PATH);
-    handLandmarker = await HandLandmarker.createFromOptions(vision, {
-      baseOptions: { modelAssetPath: MODEL_URL, delegate: "GPU" },
-      runningMode: "VIDEO",
-      numHands: NUM_HANDS,
-      minHandDetectionConfidence: 0.5,
-      minHandPresenceConfidence: 0.5,
-      minTrackingConfidence: 0.5
+let isAdmin = false;
+let isLoggingIn = false;
+
+const savedRole = localStorage.getItem('shopRole');
+if (savedRole === 'admin') {
+    isAdmin = true;
+    welcomeOverlay.classList.add('hidden');
+    applyRole();
+} else if (savedRole === 'user') {
+    welcomeOverlay.classList.add('hidden');
+    applyRole();
+}
+
+// ==================== INTRO LAUNCH: ẨN SAU KHI CHẠY XONG LẦN ĐẦU ====================
+setTimeout(() => {
+    if (introLaunch) introLaunch.style.display = 'none';
+}, 2400);
+
+// ==================== ENERGY PULSE (INTRO ĐĂNG NHẬP) ====================
+const energyCanvas = document.getElementById('energyCanvas');
+const energyCtx = energyCanvas ? energyCanvas.getContext('2d') : null;
+let energyAnimationId = null;
+let energyResizeHandler = null;
+let energyStartTime = 0;
+let energyParticles = [];
+
+function setupEnergyCanvas() {
+    if (!energyCanvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    energyCanvas.width = w * dpr;
+    energyCanvas.height = h * dpr;
+    energyCanvas.style.width = w + 'px';
+    energyCanvas.style.height = h + 'px';
+    energyCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    energyParticles = [];
+    const count = 90;
+    const maxR = Math.max(w, h) * 0.6;
+    for (let i = 0; i < count; i++) {
+        energyParticles.push({
+            angle: Math.random() * Math.PI * 2,
+            distance: Math.random() * maxR,
+            speed: 0.8 + Math.random() * 1.8,
+            size: 1 + Math.random() * 2.5,
+            hue: Math.random() > 0.5 ? 168 : 275,
+            life: Math.random()
+        });
+    }
+}
+
+function drawEnergyPulse(timestamp) {
+    if (!energyCtx) return;
+    if (!energyStartTime) energyStartTime = timestamp;
+    const t = (timestamp - energyStartTime) / 1000;
+
+    const W = window.innerWidth;
+    const H = window.innerHeight;
+    const cx = W / 2;
+    const cy = H / 2;
+    const maxR = Math.max(W, H) * 0.7;
+
+    energyCtx.fillStyle = 'rgba(2, 6, 12, 0.28)';
+    energyCtx.fillRect(0, 0, W, H);
+
+    const ringCycle = 2.2;
+    const numRings = 4;
+
+    for (let i = 0; i < numRings; i++) {
+        const ringAge = ((t + i * (ringCycle / numRings)) % ringCycle) / ringCycle;
+        const radius = ringAge * maxR;
+        const alpha = (1 - ringAge) * 0.65;
+        const lineWidth = (1 - ringAge) * 4 + 0.5;
+
+        if (radius < 6) continue;
+
+        energyCtx.beginPath();
+        energyCtx.strokeStyle = 'rgba(0, 255, 200, ' + alpha + ')';
+        energyCtx.lineWidth = lineWidth;
+        energyCtx.arc(cx, cy, radius, 0, Math.PI * 2);
+        energyCtx.stroke();
+
+        energyCtx.beginPath();
+        energyCtx.strokeStyle = 'rgba(168, 85, 247, ' + (alpha * 0.4) + ')';
+        energyCtx.lineWidth = lineWidth * 2.2;
+        energyCtx.arc(cx, cy, radius + 5, 0, Math.PI * 2);
+        energyCtx.stroke();
+    }
+
+    const beat = Math.abs(Math.sin(t * 3)) * 0.6 + Math.abs(Math.sin(t * 6)) * 0.4;
+    const coreRadius = 42 + beat * 16;
+
+    const outerGlow = energyCtx.createRadialGradient(cx, cy, 0, cx, cy, coreRadius * 5);
+    outerGlow.addColorStop(0, 'rgba(0, 255, 200, ' + (0.4 + beat * 0.25) + ')');
+    outerGlow.addColorStop(0.25, 'rgba(0, 255, 200, 0.18)');
+    outerGlow.addColorStop(0.6, 'rgba(168, 85, 247, 0.08)');
+    outerGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    energyCtx.fillStyle = outerGlow;
+    energyCtx.beginPath();
+    energyCtx.arc(cx, cy, coreRadius * 5, 0, Math.PI * 2);
+    energyCtx.fill();
+
+    const coreGrad = energyCtx.createRadialGradient(cx, cy, 0, cx, cy, coreRadius);
+    coreGrad.addColorStop(0, '#ffffff');
+    coreGrad.addColorStop(0.35, '#c8fff0');
+    coreGrad.addColorStop(0.65, '#00ffc8');
+    coreGrad.addColorStop(0.9, 'rgba(0, 255, 200, 0.4)');
+    coreGrad.addColorStop(1, 'rgba(0, 255, 200, 0)');
+    energyCtx.fillStyle = coreGrad;
+    energyCtx.beginPath();
+    energyCtx.arc(cx, cy, coreRadius, 0, Math.PI * 2);
+    energyCtx.fill();
+
+    energyCtx.beginPath();
+    energyCtx.strokeStyle = 'rgba(200, 255, 240, ' + (0.6 + beat * 0.4) + ')';
+    energyCtx.lineWidth = 2;
+    energyCtx.arc(cx, cy, coreRadius, 0, Math.PI * 2);
+    energyCtx.stroke();
+
+    const numRays = 12;
+    for (let i = 0; i < numRays; i++) {
+        const rayAngle = (i / numRays) * Math.PI * 2 + t * 0.6;
+        const rayLen = coreRadius * (1.4 + Math.sin(t * 5 + i * 0.8) * 0.6);
+        const rayAlpha = 0.3 + Math.abs(Math.sin(t * 4 + i)) * 0.5;
+
+        energyCtx.beginPath();
+        energyCtx.strokeStyle = 'rgba(255, 255, 255, ' + rayAlpha + ')';
+        energyCtx.lineWidth = 1.5;
+        energyCtx.moveTo(cx + Math.cos(rayAngle) * coreRadius * 0.9, cy + Math.sin(rayAngle) * coreRadius * 0.9);
+        energyCtx.lineTo(cx + Math.cos(rayAngle) * rayLen, cy + Math.sin(rayAngle) * rayLen);
+        energyCtx.stroke();
+
+        energyCtx.beginPath();
+        energyCtx.fillStyle = 'rgba(0, 255, 200, ' + (rayAlpha * 0.9) + ')';
+        energyCtx.arc(
+            cx + Math.cos(rayAngle) * rayLen,
+            cy + Math.sin(rayAngle) * rayLen,
+            2,
+            0, Math.PI * 2
+        );
+        energyCtx.fill();
+    }
+
+    energyParticles.forEach(p => {
+        p.distance += p.speed;
+        p.life -= 0.008;
+
+        if (p.distance > maxR || p.life <= 0) {
+            p.distance = coreRadius * 0.6;
+            p.life = 1;
+            p.angle = Math.random() * Math.PI * 2;
+            p.speed = 0.8 + Math.random() * 1.8;
+        }
+
+        const px = cx + Math.cos(p.angle) * p.distance;
+        const py = cy + Math.sin(p.angle) * p.distance;
+        const alpha = p.life * (1 - p.distance / maxR);
+
+        energyCtx.beginPath();
+        energyCtx.strokeStyle = 'hsla(' + p.hue + ', 100%, 65%, ' + (alpha * 0.35) + ')';
+        energyCtx.lineWidth = p.size * 0.6;
+        energyCtx.moveTo(
+            cx + Math.cos(p.angle) * (p.distance - 10),
+            cy + Math.sin(p.angle) * (p.distance - 10)
+        );
+        energyCtx.lineTo(px, py);
+        energyCtx.stroke();
+
+        const hg = energyCtx.createRadialGradient(px, py, 0, px, py, p.size * 3);
+        hg.addColorStop(0, 'hsla(' + p.hue + ', 100%, 75%, ' + alpha + ')');
+        hg.addColorStop(1, 'hsla(' + p.hue + ', 100%, 65%, 0)');
+        energyCtx.fillStyle = hg;
+        energyCtx.beginPath();
+        energyCtx.arc(px, py, p.size * 3, 0, Math.PI * 2);
+        energyCtx.fill();
+
+        energyCtx.fillStyle = 'hsla(' + p.hue + ', 100%, 90%, ' + alpha + ')';
+        energyCtx.beginPath();
+        energyCtx.arc(px, py, p.size * 0.8, 0, Math.PI * 2);
+        energyCtx.fill();
     });
 
-    STATUS.textContent = "Đang mở camera…";
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { width: { ideal: 480 }, height: { ideal: 360 }, facingMode: "user" },
-      audio: false
-    });
+    energyAnimationId = requestAnimationFrame(drawEnergyPulse);
+}
 
-    VIDEO.srcObject = stream;
-    await new Promise(resolve => {
-      if (VIDEO.readyState >= 1) return resolve();
-      VIDEO.addEventListener("loadedmetadata", resolve, { once: true });
-    });
-    await VIDEO.play();
+function startEnergyPulse() {
+    if (!energyCanvas || energyAnimationId) return;
+    setupEnergyCanvas();
+    energyStartTime = 0;
+    energyCtx.fillStyle = '#02060c';
+    energyCtx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+    energyAnimationId = requestAnimationFrame(drawEnergyPulse);
+    energyResizeHandler = () => setupEnergyCanvas();
+    window.addEventListener('resize', energyResizeHandler);
+}
 
-    resizeCanvas();
-    STATUS.textContent = "Sẵn sàng!";
-    setTimeout(() => STATUS.style.opacity = '0.5', 2000);
-    requestAnimationFrame(loop);
+function stopEnergyPulse() {
+    if (energyAnimationId) {
+        cancelAnimationFrame(energyAnimationId);
+        energyAnimationId = null;
+    }
+    if (energyResizeHandler) {
+        window.removeEventListener('resize', energyResizeHandler);
+        energyResizeHandler = null;
+    }
+}
 
-  } catch (err) {
-    console.error(err);
-    if (err.name === 'NotAllowedError' || err.message.includes('Permission')) {
-        STATUS.textContent = "❌ Lỗi camera - Hãy chạy qua HTTPS/localhost";
-        STATUS.style.color = "#ff8a8a";
+// ==================== CHẠY INTRO ĐĂNG NHẬP ====================
+function playLoginIntro() {
+    if (introLaunch) introLaunch.style.display = 'none';
+    if (!introLogin) return;
+    introLogin.style.display = 'none';
+    void introLogin.offsetHeight;
+    introLogin.style.display = 'flex';
+    startEnergyPulse();
+}
+
+// ==================== ĐĂNG NHẬP ====================
+function loginAs(role) {
+    if (isLoggingIn) return;
+    isLoggingIn = true;
+
+    isAdmin = (role === 'admin');
+    localStorage.setItem('shopRole', role);
+    applyRole();
+    renderProducts();
+
+    welcomeBox.classList.add('fade-out-mode');
+    playLoginIntro();
+
+    setTimeout(() => {
+        welcomeOverlay.classList.add('hidden');
+        setTimeout(() => {
+            if (introLogin) introLogin.style.display = 'none';
+            stopEnergyPulse();
+            welcomeBox.classList.remove('fade-out-mode');
+            tugScene.classList.remove('hidden');
+            adminPwdForm.classList.remove('show');
+            passwordInput.value = '';
+            isLoggingIn = false;
+        }, 700);
+    }, 2400);
+}
+
+// ==================== WELCOME SCREEN LOGIC ====================
+document.getElementById('guestBtn').addEventListener('click', () => {
+    loginAs('user');
+});
+
+document.getElementById('adminChoiceBtn').addEventListener('click', () => {
+    tugScene.classList.add('hidden');
+    adminPwdForm.classList.add('show');
+    passwordInput.focus();
+});
+
+document.getElementById('backBtn').addEventListener('click', () => {
+    adminPwdForm.classList.remove('show');
+    tugScene.classList.remove('hidden');
+    passwordInput.value = '';
+    passwordError.classList.remove('show');
+});
+
+function checkPassword() {
+    const val = passwordInput.value.trim();
+    if (val === PWD_ADMIN) {
+        loginAs('admin');
     } else {
-        STATUS.textContent = "Lỗi: " + (err.message || err);
+        passwordError.classList.add('show');
+        passwordInput.value = '';
+        passwordInput.focus();
+        passwordError.style.animation = 'none';
+        void passwordError.offsetHeight;
+        passwordError.style.animation = 'shake .4s';
     }
-  }
 }
 
-function resizeCanvas() {
-  const w = VIDEO.videoWidth  || 480;
-  const h = VIDEO.videoHeight || 360;
-  CANVAS.width  = w;
-  CANVAS.height = h;
-  // Cập nhật biến CSS --ar (không set trực tiếp aspect-ratio) để cả 2 chế độ
-  // bình thường lẫn toàn màn hình đều tự tính đúng theo tỉ lệ camera thật,
-  // tránh bị trình duyệt kéo giãn méo hình khi vào fullscreen.
-  STAGE.style.setProperty('--ar', `${w} / ${h}`);
-}
-
-/* ================== VÒNG LẶP ================== */
-function loop() {
-  if (handLandmarker && VIDEO.readyState >= 2) {
-    fpsCounter++;
-    const now = performance.now();
-    if (now - lastFpsTime > 1000) {
-      currentFps = fpsCounter;
-      fpsCounter = 0;
-      lastFpsTime = now;
-    }
-
-    if (VIDEO.currentTime !== lastVideoTime) {
-      lastVideoTime = VIDEO.currentTime;
-      try {
-        const result = handLandmarker.detectForVideo(VIDEO, now);
-        render(result);
-      } catch (e) {
-        console.warn(e);
-      }
-    }
-  }
-  requestAnimationFrame(loop);
-}
-
-/* ================== LÀM MƯỢT ================== */
-function smooth(rawHands) {
-  const out = [];
-  for (let i = 0; i < rawHands.length; i++) {
-    const raw = rawHands[i];
-    if (!smoothedHands[i]) {
-      smoothedHands[i] = raw.map(p => ({ x: p.x, y: p.y, z: p.z }));
-    }
-    const s = smoothedHands[i];
-    for (let j = 0; j < raw.length; j++) {
-      s[j].x += (raw[j].x - s[j].x) * SMOOTHING;
-      s[j].y += (raw[j].y - s[j].y) * SMOOTHING;
-      s[j].z += (raw[j].z - s[j].z) * SMOOTHING;
-    }
-    out.push(s);
-  }
-  smoothedHands.length = rawHands.length;
-  return out;
-}
-
-/* ================== ĐẾM NGÓN TAY ================== */
-function countFingers(landmarks) {
-    let count = 0;
-    for (let i = 1; i < 5; i++) {
-        if (landmarks[TIP_IDX[i]].y < landmarks[PIP_IDX[i]].y) count++;
-    }
-    const thumbTip = landmarks[4];
-    const thumbIP  = landmarks[3];
-    const wrist    = landmarks[0];
-    const distTip = Math.hypot(thumbTip.x - wrist.x, thumbTip.y - wrist.y);
-    const distIP  = Math.hypot(thumbIP.x - wrist.x, thumbIP.y - wrist.y);
-    if (distTip > distIP * 1.15) count++;
-    return count;
-}
-
-/* ================== VẼ ================== */
-function render(result) {
-  const W = CANVAS.width;
-  const H = CANVAS.height;
-
-  CTX.setTransform(1, 0, 0, 1, 0, 0);
-  CTX.clearRect(0, 0, W, H);
-
-  const hasHand = result && result.landmarks && result.landmarks.length > 0;
-
-  if (!hasHand) {
-    FINGER_INFO.textContent = '✋ Số ngón: -';
-    smoothedHands = [];
-    return;
-  }
-
-  const hands = smooth(result.landmarks);
-
-  let totalFingers = 0;
-  for (const lm of hands) totalFingers += countFingers(lm);
-  totalFingers = Math.min(totalFingers, 5);
-  FINGER_INFO.textContent = `✋ Số ngón: ${totalFingers}  •  ${currentFps} FPS`;
-
-  CTX.save();
-  CTX.translate(W, 0);
-  CTX.scale(-1, 1);
-
-  hands.forEach((lm, i) => {
-    const P = lm.map(p => ({ x: p.x * W, y: p.y * H }));
-    drawRealisticHand(P, i === 0 ? 190 : 280, W, H);
-  });
-
-  CTX.restore();
-}
-
-/* ================== VẼ BÀN TAY CHÂN THỰC (ĐÃ THU NHỎ) ================== */
-function drawRealisticHand(P, hue, W, H) {
-  // Ước lượng kích thước bàn tay
-  const handScale = Math.hypot(P[0].x - P[9].x, P[0].y - P[9].y);
-  
-  // ✅ GIẢM TỪ 0.28 XUỐNG 0.18 ĐỂ BÀN TAY NHỎ VÀ THANH MẢNH HƠN
-  const baseW = Math.max(6, handScale * 0.18);
-
-  CTX.lineCap  = "round";
-  CTX.lineJoin = "round";
-
-  /* ---------- 1. LÒNG BÀN TAY ---------- */
-  const palm = PALM_IDX.map(i => P[i]);
-  CTX.beginPath();
-  CTX.moveTo(palm[0].x, palm[0].y);
-  for (let i = 1; i < palm.length; i++) {
-    CTX.lineTo(palm[i].x, palm[i].y);
-  }
-  CTX.quadraticCurveTo(
-    (palm[0].x + P[1].x) / 2, (palm[0].y + P[1].y) / 2,
-    palm[0].x, palm[0].y
-  );
-  CTX.closePath();
-
-  const cx = (P[0].x + P[9].x) / 2;
-  const cy = (P[0].y + P[9].y) / 2;
-  const palmGrad = CTX.createRadialGradient(cx, cy, 0, cx, cy, handScale * 0.8);
-  palmGrad.addColorStop(0, `hsla(${hue}, 95%, 65%, 0.4)`);
-  palmGrad.addColorStop(0.6, `hsla(${hue}, 90%, 55%, 0.22)`);
-  palmGrad.addColorStop(1, `hsla(${hue + 40}, 85%, 45%, 0.06)`);
-  CTX.fillStyle = palmGrad;
-  CTX.fill();
-
-  CTX.strokeStyle = `hsla(${hue}, 100%, 75%, 0.65)`;
-  CTX.lineWidth = 1.5;
-  CTX.stroke();
-
-  /* ---------- 2. CÁC ĐỐT XƯƠNG ---------- */
-  for (const [a, b, w] of BONES) {
-    const p1 = P[a];
-    const p2 = P[b];
-    const lineW = baseW * w;
-
-    // Viền ngoài
-    CTX.strokeStyle = `hsla(${hue}, 100%, 75%, 0.85)`;
-    CTX.lineWidth = lineW;
-    CTX.beginPath();
-    CTX.moveTo(p1.x, p1.y);
-    CTX.lineTo(p2.x, p2.y);
-    CTX.stroke();
-
-    // Highlight trắng bên trong
-    CTX.strokeStyle = `hsla(${hue}, 100%, 95%, 0.55)`;
-    CTX.lineWidth = lineW * 0.35;
-    CTX.beginPath();
-    CTX.moveTo(p1.x, p1.y);
-    CTX.lineTo(p2.x, p2.y);
-    CTX.stroke();
-  }
-
-  /* ---------- 3. CÁC KHỚP ---------- */
-  for (let i = 0; i < P.length; i++) {
-    const isTip = TIP_IDX.includes(i);
-    const isPip = PIP_IDX.includes(i);
-    
-    if (isTip) {
-      // Vòng sáng ngoài (móng tay)
-      CTX.beginPath();
-      CTX.arc(P[i].x, P[i].y, baseW * 0.28, 0, Math.PI * 2);
-      CTX.fillStyle = `hsla(${hue}, 100%, 90%, 0.35)`;
-      CTX.fill();
-
-      // Điểm sáng trung tâm
-      CTX.beginPath();
-      CTX.arc(P[i].x, P[i].y, baseW * 0.16, 0, Math.PI * 2);
-      CTX.fillStyle = `hsla(${hue}, 100%, 98%, 0.95)`;
-      CTX.fill();
-    } else if (isPip) {
-      CTX.beginPath();
-      CTX.arc(P[i].x, P[i].y, baseW * 0.18, 0, Math.PI * 2);
-      CTX.fillStyle = `hsla(${hue}, 100%, 88%, 0.6)`;
-      CTX.fill();
-    } else if (i !== 0) {
-      CTX.beginPath();
-      CTX.arc(P[i].x, P[i].y, baseW * 0.12, 0, Math.PI * 2);
-      CTX.fillStyle = `hsla(${hue}, 100%, 85%, 0.5)`;
-      CTX.fill();
-    }
-  }
-
-  /* ---------- 4. CỔ TAY ---------- */
-  CTX.beginPath();
-  CTX.arc(P[0].x, P[0].y, baseW * 0.45, 0, Math.PI * 2);
-  CTX.fillStyle = `hsla(${hue}, 100%, 70%, 0.2)`;
-  CTX.fill();
-}
-
-/* ================== NÚT ĐIỀU KHIỂN ================== */
-BTN.addEventListener("click", () => {
-  const hidden = STAGE.classList.toggle("no-video");
-  BTN.classList.toggle("active", !hidden);
-  BTN.textContent = hidden ? "Hiện video" : "Ẩn video";
+passwordInput.addEventListener('input', () => { passwordError.classList.remove('show'); });
+passwordSubmit.addEventListener('click', checkPassword);
+passwordInput.addEventListener('keypress', e => { if (e.key === 'Enter') checkPassword(); });
+togglePassword.addEventListener('click', () => {
+    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordInput.setAttribute('type', type);
+    togglePassword.textContent = type === 'password' ? '👁️' : '🙈';
 });
 
-BTN_FS.addEventListener("click", () => {
-  if (!document.fullscreenElement) {
-    STAGE.requestFullscreen().catch(err => console.error(err));
-  } else {
-    document.exitFullscreen();
-  }
+// ==================== ROLE MANAGEMENT ====================
+function applyRole() {
+    const adminBtn = document.getElementById('adminPanelBtn');
+    const adminBadge = document.getElementById('adminBadge');
+    const adminActions = document.querySelectorAll('.admin-card-actions');
+    const loggedIn = localStorage.getItem('shopRole') !== null;
+    if (isAdmin) {
+        adminBtn.classList.add('show');
+        adminBadge.classList.add('show');
+        adminActions.forEach(el => el.classList.add('show'));
+    } else {
+        adminBtn.classList.remove('show');
+        adminBadge.classList.remove('show');
+        adminActions.forEach(el => el.classList.remove('show'));
+    }
+    if (loggedIn) headerLogoutBtn.classList.add('show');
+    else headerLogoutBtn.classList.remove('show');
+}
+
+// ==================== LOGOUT ====================
+function doLogout(needConfirm) {
+    if (needConfirm && !confirm('Bạn có chắc muốn đăng xuất không?')) return;
+    localStorage.removeItem('shopRole');
+    isAdmin = false;
+    applyRole();
+    adminOverlay.classList.remove('open');
+
+    welcomeBox.classList.remove('fade-out-mode');
+    welcomeBox.style.animation = 'none';
+    void welcomeBox.offsetHeight;
+    welcomeBox.style.animation = 'welcomeFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+
+    welcomeOverlay.classList.remove('hidden');
+    tugScene.classList.remove('hidden');
+    adminPwdForm.classList.remove('show');
+    passwordInput.value = '';
+
+    renderProducts();
+
+    if (introLaunch) {
+        introLaunch.style.display = 'none';
+        void introLaunch.offsetHeight;
+        introLaunch.style.display = 'flex';
+        introLaunch.querySelectorAll('*').forEach(el => {
+            el.style.animation = 'none';
+            void el.offsetHeight;
+            el.style.animation = '';
+        });
+        setTimeout(() => { introLaunch.style.display = 'none'; }, 2400);
+    }
+}
+
+headerLogoutBtn.addEventListener('click', () => doLogout(true));
+
+// ==================== LIGHTBOX ====================
+const lightboxOverlay = document.getElementById('lightboxOverlay');
+const lightboxImg = document.getElementById('lightboxImg');
+const lightboxClose = document.getElementById('lightboxClose');
+
+function openLightbox(src, alt) {
+    if (!src) return;
+    lightboxImg.src = src;
+    lightboxImg.alt = alt || '';
+    lightboxOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+    lightboxOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+    setTimeout(() => { lightboxImg.src = ''; }, 300);
+}
+
+lightboxClose.addEventListener('click', (e) => {
+    e.stopPropagation();
+    closeLightbox();
 });
 
-document.addEventListener("fullscreenchange", () => {
-  BTN_FS.textContent = document.fullscreenElement ? "Thoát" : "Toàn màn hình";
-  setTimeout(resizeCanvas, 100);
+lightboxOverlay.addEventListener('click', (e) => {
+    if (e.target === lightboxOverlay) closeLightbox();
 });
 
-/* ================== BẮT ĐẦU ================== */
-init();
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && lightboxOverlay.classList.contains('open')) {
+        closeLightbox();
+    }
+});
+
+// ==================== PRODUCTS DATA ====================
+const DEFAULT_PRODUCTS = [];
+
+let products = JSON.parse(localStorage.getItem('shopProducts')) || DEFAULT_PRODUCTS;
+let currentFilter = 'all';
+let currentImageBase64 = '';
+
+const saveProducts = () => localStorage.setItem('shopProducts', JSON.stringify(products));
+
+// ==================== DOM ELEMENTS ====================
+const productGrid = document.getElementById('productGrid');
+const productCountBadge = document.getElementById('productCountBadge');
+const categoryFilter = document.getElementById('categoryFilter');
+const supportToggle = document.getElementById('supportToggle');
+const supportOptions = document.getElementById('supportOptions');
+const adminOverlay = document.getElementById('adminOverlay');
+const adminPanelBtn = document.getElementById('adminPanelBtn');
+const adminProductList = document.getElementById('adminProductList');
+const adminProductCount = document.getElementById('adminProductCount');
+const imageInput = document.getElementById('imageInput');
+const imagePreview = document.getElementById('imagePreview');
+const pickImageBtn = document.getElementById('pickImageBtn');
+const removeImageBtn = document.getElementById('removeImageBtn');
+
+// ==================== HELPERS ====================
+const createEl = (tag, className = '', text = '') => {
+    const el = document.createElement(tag);
+    if (className) el.className = className;
+    if (text) el.textContent = text;
+    return el;
+};
+const formatPrice = price => price === 0 ? 'Miễn phí' : Number(price).toLocaleString('vi-VN') + ' ₫';
+
+// ==================== IMAGE UPLOAD ====================
+function setImagePreview(base64) {
+    currentImageBase64 = base64 || '';
+    imagePreview.innerHTML = '';
+    if (currentImageBase64) {
+        const img = document.createElement('img');
+        img.src = currentImageBase64;
+        img.alt = 'Preview';
+        img.style.cursor = 'zoom-in';
+        img.addEventListener('click', () => openLightbox(currentImageBase64, 'Ảnh xem trước'));
+        imagePreview.appendChild(img);
+        removeImageBtn.style.display = 'inline-flex';
+    } else {
+        const ph = createEl('span', 'placeholder', '🖼️');
+        imagePreview.appendChild(ph);
+        removeImageBtn.style.display = 'none';
+    }
+}
+
+pickImageBtn.addEventListener('click', () => imageInput.click());
+
+imageInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) return alert('Vui lòng chọn file ảnh!');
+    if (file.size > 20 * 1024 * 1024) return alert('❌ Ảnh quá lớn! Vui lòng chọn ảnh dưới 20MB.');
+    if (file.size > 2 * 1024 * 1024) {
+        const sizeMB = (file.size / 1024 / 1024).toFixed(1);
+        const ok = confirm('⚠️ Ảnh của bạn khá lớn (' + sizeMB + 'MB).\n\nViệc dùng ảnh lớn có thể làm trang chậm, tràn bộ nhớ.\n\nBạn có muốn tiếp tục không?\n(Khuyến nghị: ảnh < 2MB)');
+        if (!ok) { imageInput.value = ''; return; }
+    }
+    const reader = new FileReader();
+    reader.onload = ev => setImagePreview(ev.target.result);
+    reader.readAsDataURL(file);
+    imageInput.value = '';
+});
+
+removeImageBtn.addEventListener('click', () => setImagePreview(''));
+
+// ==================== RENDER PRODUCTS ====================
+function renderProducts() {
+    productCountBadge.textContent = products.length + ' sản phẩm';
+    productGrid.innerHTML = '';
+    const filtered = currentFilter === 'all' ? products : products.filter(p => p.category === currentFilter);
+    const fragment = document.createDocumentFragment();
+    filtered.forEach(p => {
+        const card = createEl('div', 'product-card');
+        card.dataset.id = p.id;
+
+        if (isAdmin) {
+            const actions = createEl('div', 'admin-card-actions show');
+            const editBtn = createEl('button', 'btn-edit', '✏️');
+            editBtn.onclick = () => openEditForm(p.id);
+            const delBtn = createEl('button', 'btn-delete', '🗑️');
+            delBtn.onclick = () => deleteProduct(p.id);
+            actions.append(editBtn, delBtn);
+            card.appendChild(actions);
+        }
+
+        const imgDiv = createEl('div', 'card-image');
+        if (p.badge) imgDiv.appendChild(createEl('span', 'badge', p.badge));
+
+        if (p.image) {
+            const img = document.createElement('img');
+            img.src = p.image;
+            img.alt = p.name;
+            img.title = 'Nhấn để xem ảnh lớn';
+            imgDiv.appendChild(img);
+        } else {
+            const iconDiv = createEl('div');
+            if (p.img === 'freefire') { iconDiv.className = 'freefire-icon'; iconDiv.textContent = '🔥'; }
+            else if (p.img === 'aim') { iconDiv.style.fontSize = '2.5rem'; iconDiv.textContent = '🎯'; }
+            else { iconDiv.style.fontSize = '2.5rem'; iconDiv.textContent = '📁'; }
+            imgDiv.appendChild(iconDiv);
+        }
+
+        const contentDiv = createEl('div', 'card-content');
+        contentDiv.appendChild(createEl('div', 'card-category', p.category));
+        contentDiv.appendChild(createEl('div', 'card-title', p.name));
+        const metaDiv = createEl('div', 'card-meta');
+        metaDiv.appendChild(createEl('span', '', p.duration));
+        metaDiv.appendChild(createEl('span', '', p.sold + ' đã bán'));
+        contentDiv.appendChild(metaDiv);
+        const bottomDiv = createEl('div', 'card-bottom');
+        bottomDiv.appendChild(createEl('div', 'card-price', formatPrice(p.price)));
+        bottomDiv.appendChild(createEl('div', 'card-stock', 'Còn ' + p.stock + ' sản phẩm'));
+
+        let btn;
+        if (p.downloadLink) {
+            btn = createEl('a', 'card-btn download', p.downloadText || 'Tải Xuống');
+            btn.href = p.downloadLink;
+            btn.target = '_blank';
+        } else if (p.image) {
+            btn = createEl('button', 'card-btn view-image', '🔍 Xem Ảnh Lớn');
+            btn.dataset.id = p.id;
+        } else {
+            btn = createEl('button', 'card-btn', 'Chưa có file');
+            btn.disabled = true;
+        }
+        bottomDiv.appendChild(btn);
+
+        contentDiv.appendChild(bottomDiv);
+        card.appendChild(imgDiv);
+        card.appendChild(contentDiv);
+        fragment.appendChild(card);
+    });
+    productGrid.appendChild(fragment);
+}
+
+// ==================== RENDER ADMIN LIST ====================
+function renderAdminList() {
+    adminProductCount.textContent = products.length;
+    adminProductList.innerHTML = '';
+    products.forEach(p => {
+        const item = createEl('div', 'admin-product-item');
+        const info = createEl('div', 'info');
+        if (p.image) {
+            const thumb = document.createElement('img');
+            thumb.className = 'thumb';
+            thumb.src = p.image;
+            info.appendChild(thumb);
+        }
+        const textDiv = document.createElement('div');
+        textDiv.innerHTML = '<strong>' + p.name + '</strong><span>' + p.category + ' • ' + p.duration + '</span>';
+        info.appendChild(textDiv);
+        const actions = createEl('div', 'actions');
+        const editBtn = createEl('button', 'btn-edit', '✏️');
+        editBtn.onclick = () => openEditForm(p.id);
+        const delBtn = createEl('button', 'btn-delete', '🗑️');
+        delBtn.onclick = () => deleteProduct(p.id);
+        actions.append(editBtn, delBtn);
+        item.append(info, actions);
+        adminProductList.appendChild(item);
+    });
+}
+
+// ==================== ADMIN LOGIC ====================
+function openAdminPanel() {
+    renderAdminList();
+    adminOverlay.classList.add('open');
+}
+function closeAdminPanel() {
+    adminOverlay.classList.remove('open');
+    resetForm();
+}
+function resetForm() {
+    document.getElementById('editId').value = '';
+    document.getElementById('pName').value = '';
+    document.getElementById('pCategory').value = 'AIMLOCK';
+    document.getElementById('pDuration').value = 'MỚI NHẤT';
+    document.getElementById('pPrice').value = '0';
+    document.getElementById('pBadge').value = '';
+    document.getElementById('pImg').value = 'aim';
+    document.getElementById('pLink').value = '';
+    document.getElementById('pLinkText').value = 'Tải Xuống';
+    setImagePreview('');
+}
+function openEditForm(id) {
+    const p = products.find(x => x.id === id);
+    if (!p) return;
+    document.getElementById('editId').value = p.id;
+    document.getElementById('pName').value = p.name;
+    document.getElementById('pCategory').value = p.category;
+    document.getElementById('pDuration').value = p.duration;
+    document.getElementById('pPrice').value = p.price;
+    document.getElementById('pBadge').value = p.badge || '';
+    document.getElementById('pImg').value = p.img;
+    document.getElementById('pLink').value = p.downloadLink || '';
+    document.getElementById('pLinkText').value = p.downloadText || 'Tải Xuống';
+    setImagePreview(p.image || '');
+    adminOverlay.classList.add('open');
+}
+function saveProduct() {
+    const name = document.getElementById('pName').value.trim();
+    if (!name) return alert('Vui lòng nhập tên sản phẩm!');
+    const editId = document.getElementById('editId').value;
+    const data = {
+        name: name,
+        category: document.getElementById('pCategory').value,
+        duration: document.getElementById('pDuration').value.trim() || 'MỚI NHẤT',
+        price: Number(document.getElementById('pPrice').value) || 0,
+        badge: document.getElementById('pBadge').value.trim(),
+        img: document.getElementById('pImg').value,
+        image: currentImageBase64,
+        downloadLink: document.getElementById('pLink').value.trim(),
+        downloadText: document.getElementById('pLinkText').value.trim() || 'Tải Xuống'
+    };
+    if (editId) {
+        const idx = products.findIndex(p => p.id === Number(editId));
+        if (idx !== -1) products[idx] = { ...products[idx], ...data };
+        alert('✅ Đã cập nhật sản phẩm!');
+    } else {
+        const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+        products.push({ id: newId, sold: 0, stock: 999, ...data });
+        alert('✅ Đã thêm sản phẩm mới!');
+    }
+    saveProducts();
+    resetForm();
+    renderProducts();
+    renderAdminList();
+}
+function deleteProduct(id) {
+    if (!confirm('Bạn có chắc muốn xóa sản phẩm này?')) return;
+    products = products.filter(p => p.id !== id);
+    saveProducts();
+    renderProducts();
+    renderAdminList();
+}
+
+function logout() { doLogout(false); }
+
+// ==================== EXPORT CODE ====================
+function exportHTML() {
+    if (!confirm('📥 Xuất file HTML mới?\n\n• Sản phẩm + ảnh hiện tại sẽ được lưu vào code\n• File sẽ được đặt tên là: index.html\n• Người vào sẽ chọn Khách hoặc Admin')) return;
+    try {
+        let currentHtml = document.documentElement.outerHTML;
+        currentHtml = currentHtml.split('<' + '/script>').join('<\\/script>');
+
+        const clean = (sel, cls) => {
+            const regex = new RegExp('class="([^"]*)' + cls + '([^"]*)"', 'g');
+            currentHtml = currentHtml.replace(regex, 'class="$1$2"');
+        };
+        clean('#adminOverlay', 'open');
+        clean('#welcomeOverlay', 'hidden');
+        clean('#tugScene', 'hidden');
+        clean('#welcomeBox', 'fade-out-mode');
+        clean('.admin-card-actions', 'show');
+        clean('.admin-badge', 'show');
+        clean('.admin-btn', 'show');
+        clean('.header-logout-btn', 'show');
+        clean('.support-options', 'show');
+        clean('.support-toggle', 'active');
+        clean('#adminPwdForm', 'show');
+
+        currentHtml = currentHtml.replace(/<div class="product-grid" id="productGrid">[\s\S]*?<\/div>/, '<div class="product-grid" id="productGrid"></div>');
+        currentHtml = currentHtml.replace(/<div id="adminProductList">[\s\S]*?<\/div>/, '<div id="adminProductList"></div>');
+        currentHtml = currentHtml.replace(/<div class="image-preview" id="imagePreview">[\s\S]*?<\/div>/, '<div class="image-preview" id="imagePreview"><span class="placeholder">🖼️</span></div>');
+
+        const prodRegex = /const DEFAULT_PRODUCTS = \[[\s\S]*?\];/;
+        currentHtml = currentHtml.replace(prodRegex, 'const DEFAULT_PRODUCTS = ' + JSON.stringify(products) + ';');
+
+        currentHtml = currentHtml.split('<\\/script>').join('<' + '/script>');
+
+        // === TẠO FILE VỚI TÊN CỐ ĐỊNH index.html ===
+        const fileName = 'index.html';
+        const blob = new Blob([currentHtml], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        a.rel = 'noopener';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        setTimeout(() => URL.revokeObjectURL(url), 1500);
+
+        alert('✅ Đã xuất file: ' + fileName + '\n\n' +
+              '📁 File được lưu vào thư mục Downloads (Tải về).\n' +
+              '💡 Nếu thấy file tên "index (1).html" nghĩa là bạn đã có file index.html cũ trong thư mục — hãy xóa file cũ trước khi tải, hoặc đổi tên file cũ.');
+    } catch (e) {
+        alert('❌ Lỗi xuất file: ' + e.message);
+    }
+}
+
+// ==================== EVENTS ====================
+document.getElementById('saveProduct').addEventListener('click', saveProduct);
+document.getElementById('exportCodeBtn').addEventListener('click', exportHTML);
+document.getElementById('closeAdmin').addEventListener('click', closeAdminPanel);
+document.getElementById('logoutBtn').addEventListener('click', logout);
+adminPanelBtn.addEventListener('click', openAdminPanel);
+adminOverlay.addEventListener('click', e => { if (e.target === adminOverlay) closeAdminPanel(); });
+
+categoryFilter.addEventListener('change', e => {
+    currentFilter = e.target.value;
+    renderProducts();
+});
+
+productGrid.addEventListener('click', e => {
+    const img = e.target.closest('.card-image img');
+    if (img) {
+        const card = img.closest('.product-card');
+        const p = products.find(x => x.id === Number(card.dataset.id));
+        if (p && p.image) openLightbox(p.image, p.name);
+        return;
+    }
+    const btn = e.target.closest('.card-btn.view-image');
+    if (btn) {
+        const p = products.find(x => x.id === Number(btn.dataset.id));
+        if (p && p.image) openLightbox(p.image, p.name);
+    }
+});
+
+// ==================== HIỆU ỨNG "NHẤC CARD" ====================
+function addCardTouchLift(container) {
+    let activeCard = null;
+    const release = () => {
+        if (activeCard) { activeCard.classList.remove('touched'); activeCard = null; }
+    };
+    container.addEventListener('touchstart', e => {
+        const card = e.target.closest('.product-card');
+        if (card) { activeCard = card; card.classList.add('touched'); }
+    }, { passive: true });
+    container.addEventListener('touchend', release);
+    container.addEventListener('touchcancel', release);
+    container.addEventListener('mousedown', e => {
+        const card = e.target.closest('.product-card');
+        if (card) { activeCard = card; card.classList.add('touched'); }
+    });
+    container.addEventListener('mouseup', release);
+    container.addEventListener('mouseleave', e => {
+        if (e.target.closest && e.target.closest('.product-card') === activeCard) release();
+    }, true);
+}
+addCardTouchLift(productGrid);
+
+supportToggle.addEventListener('click', () => {
+    supportOptions.classList.toggle('show');
+    supportToggle.classList.toggle('active');
+    supportToggle.innerHTML = supportOptions.classList.contains('show') ? '✖' : '💬';
+});
+
+// ==================== INIT ====================
+renderProducts();
 </script>
+
 </body>
 </html>
