@@ -1397,7 +1397,7 @@ input[type="file"] { display: none; }
 <div class="header-left">
 <div class="logo-icon">⬡</div>
 <div class="brand-info"><p>Cửa hàng tiện ích</p></div>
-<span class="product-count-badge" id="productCountBadge">1 sản phẩm</span>
+<span class="product-count-badge" id="productCountBadge">2 sản phẩm</span>
 <span class="admin-badge " id="adminBadge">👑 ADMIN</span>
 </div>
 <div class="header-right">
@@ -1418,8 +1418,8 @@ input[type="file"] { display: none; }
 <button class="collapse-btn">Thu gọn ▸</button>
 </div>
 
-<main><div class="product-grid" id="productGrid"></div><div class="card-image"><div style="font-size: 2.5rem;">📁</div></div><div class="card-content"><div class="card-category">GAME</div><div class="card-title">THPT</div><div class="card-meta"><span>MỚI NHẤT</span><span>0 đã bán</span></div><div class="card-bottom"><div class="card-price">Miễn phí</div><div class="card-stock">Còn 999 sản phẩm</div><a class="card-btn download" href="https://taphuan.nxbgd.vn/tap-huan?grade=10&amp;subjects=29" target="_blank">Tải Xuống</a></div></div></div></div></main>
-</div>
+<main><div class="product-grid" id="productGrid"></div><div class="card-image"><div style="font-size: 2.5rem;">📁</div></div><div class="card-content"><div class="card-category">GAME</div><div class="card-title">THPT</div><div class="card-meta"><span>MỚI NHẤT</span><span>0 đã bán</span></div><div class="card-bottom"><div class="card-price">Miễn phí</div><div class="card-stock">Còn 999 sản phẩm</div><a class="card-btn download" href="https://taphuan.nxbgd.vn/tap-huan?grade=10&amp;subjects=29" target="_blank">Tải Xuống</a></div></div></div><div class="product-card" data-id="2"><div class="admin-card-actions "><button class="btn-edit">✏️</button><button class="btn-delete">🗑️</button></div><div class="card-image"><div style="font-size: 2.5rem;">🎯</div></div><div class="card-content"><div class="card-category">AIMLOCK</div><div class="card-title">Files</div><div class="card-meta"><span>MỚI NHẤT</span><span>0 đã bán</span></div><div class="card-bottom"><div class="card-price">Miễn phí</div><div class="card-stock">Còn 999 sản phẩm</div><a class="card-btn download" href="https://vi.anotepad.com/note/read/4dxiffn9" target="_blank">Tải Xuống</a></div></div></div></div><div class="card-image"><div style="font-size: 2.5rem;">📁</div></div><div class="card-content"><div class="card-category">GAME</div><div class="card-title">THPT</div><div class="card-meta"><span>MỚI NHẤT</span><span>0 đã bán</span></div><div class="card-bottom"><div class="card-price">Miễn phí</div><div class="card-stock">Còn 999 sản phẩm</div><a class="card-btn download" href="https://taphuan.nxbgd.vn/tap-huan?grade=10&amp;subjects=29" target="_blank">Tải Xuống</a></div></div></main></div>
+
 
 <!-- ================= LIGHTBOX (Xem ảnh lớn) ================= -->
 <div class="lightbox-overlay" id="lightboxOverlay">
@@ -1472,13 +1472,13 @@ input[type="file"] { display: none; }
 <button class="export-btn" id="exportCodeBtn">📥 Xuất Code HTML (Lưu Vào Code)</button>
 
 <div class="admin-product-list">
-<h3>📋 Danh sách sản phẩm (<span id="adminProductCount">1</span>)</h3>
-<div id="adminProductList"></div></div><div class="actions"><button class="btn-edit">✏️</button><button class="btn-delete">🗑️</button></div></div></div>
+<h3>📋 Danh sách sản phẩm (<span id="adminProductCount">2</span>)</h3>
+<div id="adminProductList"></div></div><div class="actions"><button class="btn-edit">✏️</button><button class="btn-delete">🗑️</button></div></div><div class="admin-product-item"><div class="info"><div><strong>Files</strong><span>AIMLOCK • MỚI NHẤT</span></div></div><div class="actions"><button class="btn-edit">✏️</button><button class="btn-delete">🗑️</button></div></div></div></div><div class="actions"><button class="btn-edit">✏️</button><button class="btn-delete">🗑️</button></div></div></div>
 </div>
 <button class="logout-btn" id="logoutBtn">🔓 Đăng Xuất Admin</button>
-</div>
-</div>
-</div>
+
+
+
 
 <!-- ================= SUPPORT ================= -->
 <div class="support-widget">
@@ -1879,7 +1879,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ==================== PRODUCTS DATA ====================
-const DEFAULT_PRODUCTS = [{"id":1,"sold":0,"stock":999,"name":"THPT","category":"GAME","duration":"MỚI NHẤT","price":0,"badge":"","img":"file","image":"","downloadLink":"https://taphuan.nxbgd.vn/tap-huan?grade=10&subjects=29","downloadText":"Tải Xuống"}];
+const DEFAULT_PRODUCTS = [{"id":1,"sold":0,"stock":999,"name":"THPT","category":"GAME","duration":"MỚI NHẤT","price":0,"badge":"","img":"file","image":"","downloadLink":"https://taphuan.nxbgd.vn/tap-huan?grade=10&subjects=29","downloadText":"Tải Xuống"},{"id":2,"sold":0,"stock":999,"name":"Files","category":"AIMLOCK","duration":"MỚI NHẤT","price":0,"badge":"","img":"aim","image":"","downloadLink":"https://vi.anotepad.com/note/read/4dxiffn9","downloadText":"Tải Xuống"}];
 
 let products = JSON.parse(localStorage.getItem('shopProducts')) || DEFAULT_PRODUCTS;
 let currentFilter = 'all';
